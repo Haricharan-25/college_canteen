@@ -4,14 +4,14 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { createOrder } from '../services/api';
-import { 
-  ShoppingBag, 
-  Trash2, 
-  Plus, 
-  Minus, 
-  ArrowRight, 
-  ShieldCheck, 
-  Clock, 
+import {
+  ShoppingBag,
+  Trash2,
+  Plus,
+  Minus,
+  ArrowRight,
+  ShieldCheck,
+  Clock,
   AlertTriangle,
   Receipt,
   CheckCircle2
@@ -82,7 +82,7 @@ const Cart = () => {
     } catch (err) {
       console.error(err);
       setErrorMsg(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to place order. Ensure food items are available and canteen service is running.'
       );
       showToast('Could not place order. Please review your cart.', 'error');
@@ -196,10 +196,10 @@ const Cart = () => {
 
                   return (
                     <div key={item.id} className="cart-item-card card">
-                      <img 
-                        src={item.imageUrl || DEFAULT_IMAGE} 
-                        alt={item.name} 
-                        className="cart-item-thumb" 
+                      <img
+                        src={item.imageUrl || DEFAULT_IMAGE}
+                        alt={item.name}
+                        className="cart-item-thumb"
                         onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_IMAGE; }}
                       />
 

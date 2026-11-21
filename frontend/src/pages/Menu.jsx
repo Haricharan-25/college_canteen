@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getFoods } from '../services/api';
 import FoodCard from '../components/FoodCard';
 import { FoodCardSkeleton } from '../components/Skeleton';
@@ -8,11 +9,23 @@ import './Menu.css';
 const CATEGORIES = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
 const Menu = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
+  
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState(
+    categoryParam && CATEGORIES.includes(categoryParam) ? categoryParam : 'All'
+  );
   const [availabilityFilter, setAvailabilityFilter] = useState('all'); // all, available
+
+  useEffect(() => {
+    const cat = searchParams.get('category');
+    if (cat && CATEGORIES.includes(cat)) {
+      setActiveCategory(cat);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     loadFoodItems();
@@ -52,6 +65,16 @@ const Menu = () => {
   const handleClearSearch = () => {
     setSearchQuery('');
     loadFoodItems();
+  };
+
+  const handleCategorySelect = (cat) => {
+    setActiveCategory(cat);
+    setSearchQuery('');
+    if (cat === 'All') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category: cat });
+    }
   };
 
   // Filter client-side by availability if requested
@@ -119,7 +142,7 @@ const Menu = () => {
                 <button
                   type="button"
                   key={cat}
-                  onClick={() => { setActiveCategory(cat); setSearchQuery(''); }}
+                  onClick={() => handleCategorySelect(cat)}
                   className={`cat-pill-btn ${activeCategory === cat ? 'active' : ''}`}
                 >
                   {cat}
@@ -174,7 +197,7 @@ const Menu = () => {
             </p>
             <button
               type="button"
-              onClick={() => { setActiveCategory('All'); setSearchQuery(''); setAvailabilityFilter('all'); }}
+              onClick={() => { handleCategorySelect('All'); setSearchQuery(''); setAvailabilityFilter('all'); }}
               className="btn btn-primary btn-sm"
             >
               Reset All Filters

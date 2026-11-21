@@ -3,49 +3,49 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getFoods } from '../services/api';
 import FoodCard from '../components/FoodCard';
+import CategoryScrollRow from '../components/CategoryScrollRow';
 import { FoodCardSkeleton } from '../components/Skeleton';
 import { 
   Search, 
   ArrowRight, 
-  Flame, 
   Sparkles, 
-  Clock, 
-  ShieldCheck, 
   Coffee,
   CheckCircle2,
   Utensils,
+  Sun,
+  Cookie,
+  CupSoda,
+  Zap,
   X
 } from 'lucide-react';
 import './Home.css';
 
 const CATEGORIES = [
-  { name: 'All', label: 'All Items' },
-  { name: 'Breakfast', label: 'Breakfast' },
-  { name: 'Lunch', label: 'Lunch' },
-  { name: 'Snacks', label: 'Snacks' },
-  { name: 'Beverages', label: 'Beverages' },
+  { name: 'All', label: 'All Categories' },
+  { name: 'Breakfast', label: 'Breakfast', icon: Sun, subtitle: 'Start your college day with hot, crisp breakfast' },
+  { name: 'Lunch', label: 'Lunch', icon: Utensils, subtitle: 'Hearty thalis, biryanis, and satisfying meal combos' },
+  { name: 'Snacks', label: 'Snacks', icon: Cookie, subtitle: 'Quick bites, sandwiches, and break-time cravings' },
+  { name: 'Beverages', label: 'Beverages', icon: Coffee, subtitle: 'Refreshing coolers, shakes, and filter coffee' },
 ];
+
+const MAIN_CATEGORIES = ['Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
 const Home = () => {
   const { user } = useAuth();
-  const [foods, setFoods] = useState([]);
+  const [allFoods, setAllFoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    fetchFoodItems();
-  }, [selectedCategory]);
+    fetchAllFoodItems();
+  }, []);
 
-  const fetchFoodItems = async () => {
+  const fetchAllFoodItems = async () => {
     setLoading(true);
     try {
-      const params = {};
-      if (selectedCategory !== 'All') {
-        params.category = selectedCategory;
-      }
-      const data = await getFoods(params);
-      setFoods(data);
+      const data = await getFoods();
+      setAllFoods(data);
     } catch (err) {
       console.error('Failed to load foods:', err);
     } finally {
@@ -53,25 +53,34 @@ const Home = () => {
     }
   };
 
-  const handleSearchChange = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    if (query.trim().length > 0) {
-      try {
-        const data = await getFoods({ search: query });
-        setFoods(data);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      fetchFoodItems();
-    }
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    fetchFoodItems();
   };
+
+  // Filter foods based on search query
+  const searchResults = searchQuery.trim().length > 0 
+    ? allFoods.filter((f) => 
+        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (f.description && f.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (f.category && f.category.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : [];
+
+  // Group foods by category
+  const getFoodsByCategory = (categoryName) => {
+    return allFoods.filter(
+      (f) => f.category && f.category.toLowerCase() === categoryName.toLowerCase()
+    );
+  };
+
+  // Which categories to display
+  const categoriesToRender = selectedCategory === 'All' 
+    ? MAIN_CATEGORIES 
+    : [selectedCategory];
 
   return (
     <div className="home-page">
@@ -147,16 +156,9 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Category Pills Navigation */}
+      {/* Category Pills Quick Filter */}
       <section className="category-section">
         <div className="container">
-          <div className="section-header-row">
-            <div>
-              <h2 className="section-title">Browse By Category</h2>
-              <p className="section-desc">Select a category to view fresh available dishes.</p>
-            </div>
-          </div>
-
           <div className="category-pills-row">
             {CATEGORIES.map((cat) => (
               <button
@@ -172,50 +174,94 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Food Items Grid Section */}
-      <section className="featured-section">
+      {/* Main Food Browsing: Instant Order Section */}
+      <section className="instant-order-section">
         <div className="container">
-          <div className="section-header-row">
-            <div>
-              <div className="section-title-with-icon">
-                <Flame size={20} className="text-accent" />
-                <h2 className="section-title">
-                  {selectedCategory === 'All' ? 'Popular & Featured Canteen Bites' : `${selectedCategory} Menu`}
-                </h2>
-              </div>
-              <p className="section-desc">Freshly prepared everyday for students and campus staff.</p>
+          {/* Main Section Heading */}
+          <div className="instant-order-header">
+            <div className="section-title-with-badge">
+              <Zap size={22} className="text-primary icon-zap" />
+              <h2 className="section-title">Instant Order</h2>
             </div>
-            <Link to="/menu" className="btn btn-outline btn-sm">
-              See All Items ({foods.length})
-            </Link>
+            <p className="section-subtitle">Find your favourites and order instantly.</p>
           </div>
 
+          {/* Conditional Rendering: Loading State */}
           {loading ? (
-            <div className="food-grid">
-              {Array.from({ length: 6 }).map((_, idx) => (
-                <FoodCardSkeleton key={idx} />
+            <div className="category-scroll-skeleton-wrapper">
+              {Array.from({ length: 2 }).map((_, rIdx) => (
+                <div key={rIdx} className="category-scroll-section">
+                  <div className="skeleton-box skeleton-title-bar" />
+                  <div className="category-scroll-container">
+                    {Array.from({ length: 4 }).map((_, cIdx) => (
+                      <div key={cIdx} className="category-scroll-card-wrapper">
+                        <FoodCardSkeleton />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
-          ) : foods.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state-icon">
-                <Utensils size={28} />
+          ) : searchQuery.trim().length > 0 ? (
+            /* Search Results Display */
+            <div className="search-results-section">
+              <div className="search-results-header">
+                <h3>
+                  Search Results for "{searchQuery}" 
+                  <span className="search-count-pill">{searchResults.length} found</span>
+                </h3>
+                <button 
+                  type="button" 
+                  onClick={handleClearSearch} 
+                  className="btn btn-outline btn-sm"
+                >
+                  Clear Search
+                </button>
               </div>
-              <h3>No Food Items Found</h3>
-              <p>We couldn't find any food items matching "{searchQuery}". Try searching for another dish.</p>
-              <button 
-                type="button"
-                onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
-                className="btn btn-primary btn-sm"
-              >
-                Reset Search
-              </button>
+
+              {searchResults.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-state-icon">
+                    <Utensils size={28} />
+                  </div>
+                  <h3>No Food Items Found</h3>
+                  <p>We couldn't find any dish matching "{searchQuery}". Try searching for another meal or beverage.</p>
+                  <button 
+                    type="button" 
+                    onClick={handleClearSearch} 
+                    className="btn btn-primary btn-sm"
+                  >
+                    View All Items
+                  </button>
+                </div>
+              ) : (
+                <div className="category-scroll-container">
+                  {searchResults.map((food) => (
+                    <div key={food.id} className="category-scroll-card-wrapper">
+                      <FoodCard food={food} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
-            <div className="food-grid">
-              {foods.map((food) => (
-                <FoodCard key={food.id} food={food} />
-              ))}
+            /* Horizontally Scrollable Categories (Breakfast, Lunch, Snacks, Beverages) */
+            <div className="category-sections-list">
+              {categoriesToRender.map((catName) => {
+                const catMeta = CATEGORIES.find((c) => c.name === catName) || {};
+                const catFoods = getFoodsByCategory(catName);
+
+                return (
+                  <CategoryScrollRow
+                    key={catName}
+                    title={catName}
+                    subtitle={catMeta.subtitle}
+                    icon={catMeta.icon}
+                    foods={catFoods}
+                    categoryKey={catName}
+                  />
+                );
+              })}
             </div>
           )}
         </div>
