@@ -1,0 +1,141 @@
+.instant-order-section {
+  padding: 1.75rem 0 1.5rem;
+  background-color: var(--bg-page);
+  border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.instant-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.instant-order-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-zap {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--secondary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.marquee-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--primary);
+}
+
+/* Continuously moving marquee wrapper */
+.marquee-showcase-wrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+  /* Extra vertical padding ensures translateY(-6px) and card shadows are NEVER clipped */
+  padding: 0.75rem 0 1.25rem;
+}
+
+/* Pause the infinite animation when the showcase is hovered */
+.marquee-showcase-wrapper:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* The moving marquee track containing duplicated items */
+.marquee-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  animation: continuousMarqueeScroll 45s linear infinite;
+  will-change: transform;
+}
+
+/* Infinite right-to-left marquee animation:
+   Because the list consists of Set A + Set B (two identical sequences),
+   when translateX reaches -50%, Set A has moved completely out and
+   Set B is at position 0, achieving a 100% seamless infinite loop. */
+@keyframes continuousMarqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Individual card container inside marquee */
+.marquee-card-slot {
+  flex: 0 0 250px;
+  width: 250px;
+  display: flex;
+}
+
+.marquee-card-slot > .food-card {
+  width: 100%;
+}
+
+/* Accessible reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    overflow-x: auto;
+    width: 100%;
+    padding: 0 1.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 1.4rem;
+  }
+
+  .marquee-card-slot {
+    flex: 0 0 235px;
+    width: 235px;
+  }
+
+  .marquee-track {
+    animation-duration: 35s;
+    gap: 1rem;
+  }
+}

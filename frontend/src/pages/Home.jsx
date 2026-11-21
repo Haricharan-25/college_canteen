@@ -3,32 +3,27 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getFoods } from '../services/api';
 import FoodCard from '../components/FoodCard';
-import CategoryScrollRow from '../components/CategoryScrollRow';
+import InstantOrderMarquee from '../components/InstantOrderMarquee';
 import { FoodCardSkeleton } from '../components/Skeleton';
 import { 
   Search, 
   ArrowRight, 
   Sparkles, 
-  Coffee,
-  CheckCircle2,
-  Utensils,
-  Sun,
-  Cookie,
-  CupSoda,
-  Zap,
-  X
+  CheckCircle2, 
+  UtensilsCrossed, 
+  Utensils, 
+  X,
+  Filter
 } from 'lucide-react';
 import './Home.css';
 
-const CATEGORIES = [
-  { name: 'All', label: 'All Categories' },
-  { name: 'Breakfast', label: 'Breakfast', icon: Sun, subtitle: 'Start your college day with hot, crisp breakfast' },
-  { name: 'Lunch', label: 'Lunch', icon: Utensils, subtitle: 'Hearty thalis, biryanis, and satisfying meal combos' },
-  { name: 'Snacks', label: 'Snacks', icon: Cookie, subtitle: 'Quick bites, sandwiches, and break-time cravings' },
-  { name: 'Beverages', label: 'Beverages', icon: Coffee, subtitle: 'Refreshing coolers, shakes, and filter coffee' },
+const MENU_CATEGORIES = [
+  { id: 'All', label: 'All Items' },
+  { id: 'Breakfast', label: 'Breakfast' },
+  { id: 'Lunch', label: 'Lunch' },
+  { id: 'Snacks', label: 'Snacks' },
+  { id: 'Beverages', label: 'Beverages' },
 ];
-
-const MAIN_CATEGORIES = ['Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 
 const Home = () => {
   const { user } = useAuth();
@@ -53,85 +48,52 @@ const Home = () => {
     }
   };
 
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
   const handleClearSearch = () => {
     setSearchQuery('');
   };
 
-  // Filter foods based on search query
-  const searchResults = searchQuery.trim().length > 0 
-    ? allFoods.filter((f) => 
-        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (f.description && f.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (f.category && f.category.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : [];
+  // Filter foods for Section 2: Explore Our Menu
+  const filteredFoods = allFoods.filter((food) => {
+    const matchesCategory =
+      selectedCategory === 'All' ||
+      (food.category && food.category.toLowerCase() === selectedCategory.toLowerCase());
 
-  // Group foods by category
-  const getFoodsByCategory = (categoryName) => {
-    return allFoods.filter(
-      (f) => f.category && f.category.toLowerCase() === categoryName.toLowerCase()
-    );
-  };
+    const matchesSearch =
+      !searchQuery.trim() ||
+      food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (food.description && food.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Which categories to display
-  const categoriesToRender = selectedCategory === 'All' 
-    ? MAIN_CATEGORIES 
-    : [selectedCategory];
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="home-page">
-      {/* Hero Welcome Section */}
+      {/* Top Welcome / Hero Banner */}
       <section className="hero-section">
         <div className="container hero-container">
           <div className="hero-content">
             <span className="badge badge-primary hero-badge">
-              <Sparkles size={13} /> College Canteen Ordering
+              <Sparkles size={13} /> Smart College Canteen
             </span>
             <h1 className="hero-title">
-              Skip The Long Queues. Order Fresh Food Online.
+              Skip The Queue. Order Online, Pick Up Fresh.
             </h1>
             <p className="hero-subtitle">
-              Welcome, <strong>{user ? user.name : 'Student'}</strong>! Browse freshly prepared meals, track your order's live kitchen status, and collect your food without waiting in break-time queues.
+              Welcome back, <strong>{user ? user.name : 'Student'}</strong>! Order your favourite meals ahead of break time, monitor live kitchen preparation, and collect your food without long queue delays.
             </p>
-
-            {/* Quick Search Bar */}
-            <div className="hero-search-bar">
-              <Search size={18} className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search food by name (e.g. Masala Dosa, Biryani, Chai)..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="search-input"
-              />
-              {searchQuery && (
-                <button 
-                  type="button"
-                  className="clear-search-btn"
-                  onClick={handleClearSearch}
-                  aria-label="Clear search"
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </div>
 
             <div className="hero-quick-features">
               <div className="feature-item">
                 <CheckCircle2 size={15} className="feature-check" />
-                <span>Real-Time Kitchen Tracking</span>
+                <span>Live Kitchen Tracking</span>
               </div>
               <div className="feature-item">
                 <CheckCircle2 size={15} className="feature-check" />
-                <span>Zero Break Queue Delay</span>
+                <span>Zero Break Delays</span>
               </div>
               <div className="feature-item">
                 <CheckCircle2 size={15} className="feature-check" />
-                <span>Subsidized Student Pricing</span>
+                <span>Student Subsidized Pricing</span>
               </div>
             </div>
           </div>
@@ -139,16 +101,16 @@ const Home = () => {
           <div className="hero-banner-visual">
             <div className="hero-feature-card card">
               <div className="hero-feature-header">
-                <span className="badge badge-accent">Peak Lunch Break</span>
-                <span className="hero-time">12:30 PM – 2:00 PM</span>
+                <span className="badge badge-accent">Lunch Rush Ready</span>
+                <span className="hero-time">Counter #1 Open</span>
               </div>
-              <h3 className="hero-banner-heading">Chef's Specials Prepared Fresh Every Morning</h3>
+              <h3 className="hero-banner-heading">Chef's Fresh Specials Prepared Everyday</h3>
               <p className="hero-banner-text">
-                Crispy Dosas, Steaming Dum Biryani, and Hot Filter Coffee ready at Counter #1.
+                Crispy Masala Dosas, Steaming Dum Biryani, and Hot Filter Coffee prepared to order.
               </p>
               <div className="hero-card-footer">
                 <Link to="/menu" className="btn btn-primary btn-sm">
-                  Explore Full Menu <ArrowRight size={15} />
+                  View Full Menu <ArrowRight size={15} />
                 </Link>
               </div>
             </div>
@@ -156,112 +118,130 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Category Pills Quick Filter */}
-      <section className="category-section">
+      {/* =========================================================================
+          SECTION 1: INSTANT ORDER — CONTINUOUS HORIZONTAL MOVEMENT (MARQUEE)
+          Continuously moves right-to-left automatically. Pauses on hover.
+          ========================================================================= */}
+      {loading ? (
+        <section className="instant-order-section">
+          <div className="container">
+            <div className="skeleton-box" style={{ width: '220px', height: '28px', marginBottom: '1.25rem' }} />
+            <div style={{ display: 'flex', gap: '1.25rem', overflow: 'hidden' }}>
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <div key={idx} style={{ flex: '0 0 250px' }}>
+                  <FoodCardSkeleton />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <InstantOrderMarquee foods={allFoods} />
+      )}
+
+      {/* =========================================================================
+          SECTION 2: EXPLORE OUR MENU — COMPACT FOOD CARD GRID
+          Normal compact grid: 4 cols desktop, 3 cols medium, 2 cols mobile.
+          ========================================================================= */}
+      <section className="menu-grid-section">
         <div className="container">
-          <div className="category-pills-row">
-            {CATEGORIES.map((cat) => (
+          {/* Menu Section Header */}
+          <div className="menu-section-header">
+            <div className="menu-header-text">
+              <div className="section-title-with-badge">
+                <UtensilsCrossed size={22} className="text-primary" />
+                <h2 className="section-title">Explore Our Menu</h2>
+              </div>
+              <p className="section-subtitle">
+                Select your meal category or search for dishes below.
+              </p>
+            </div>
+
+            {/* Quick Search Input */}
+            <div className="menu-search-box">
+              <Search size={17} className="menu-search-icon" />
+              <input
+                type="text"
+                placeholder="Search menu (e.g. Dosa, Chai, Biryani)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="menu-search-input"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="menu-clear-btn"
+                  aria-label="Clear search text"
+                >
+                  <X size={15} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="menu-category-pills">
+            {MENU_CATEGORIES.map((cat) => (
               <button
                 type="button"
-                key={cat.name}
-                onClick={() => { setSelectedCategory(cat.name); setSearchQuery(''); }}
-                className={`category-pill ${selectedCategory === cat.name ? 'active' : ''}`}
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`menu-cat-pill ${selectedCategory === cat.id ? 'active' : ''}`}
               >
                 {cat.label}
               </button>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Main Food Browsing: Instant Order Section */}
-      <section className="instant-order-section">
-        <div className="container">
-          {/* Main Section Heading */}
-          <div className="instant-order-header">
-            <div className="section-title-with-badge">
-              <Zap size={22} className="text-primary icon-zap" />
-              <h2 className="section-title">Instant Order</h2>
-            </div>
-            <p className="section-subtitle">Find your favourites and order instantly.</p>
+          {/* Results Summary Bar */}
+          <div className="menu-results-count-bar">
+            <span>
+              Showing <strong>{filteredFoods.length}</strong> {selectedCategory !== 'All' ? selectedCategory : ''} items
+              {searchQuery && ` matching "${searchQuery}"`}
+            </span>
+            {(selectedCategory !== 'All' || searchQuery) && (
+              <button
+                type="button"
+                onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
+                className="btn btn-outline btn-sm reset-filter-btn"
+              >
+                Reset Filters
+              </button>
+            )}
           </div>
 
-          {/* Conditional Rendering: Loading State */}
+          {/* Compact Food Card Grid */}
           {loading ? (
-            <div className="category-scroll-skeleton-wrapper">
-              {Array.from({ length: 2 }).map((_, rIdx) => (
-                <div key={rIdx} className="category-scroll-section">
-                  <div className="skeleton-box skeleton-title-bar" />
-                  <div className="category-scroll-container">
-                    {Array.from({ length: 4 }).map((_, cIdx) => (
-                      <div key={cIdx} className="category-scroll-card-wrapper">
-                        <FoodCardSkeleton />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            <div className="compact-menu-grid">
+              {Array.from({ length: 8 }).map((_, idx) => (
+                <FoodCardSkeleton key={idx} />
               ))}
             </div>
-          ) : searchQuery.trim().length > 0 ? (
-            /* Search Results Display */
-            <div className="search-results-section">
-              <div className="search-results-header">
-                <h3>
-                  Search Results for "{searchQuery}" 
-                  <span className="search-count-pill">{searchResults.length} found</span>
-                </h3>
-                <button 
-                  type="button" 
-                  onClick={handleClearSearch} 
-                  className="btn btn-outline btn-sm"
-                >
-                  Clear Search
-                </button>
+          ) : filteredFoods.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <Utensils size={28} />
               </div>
-
-              {searchResults.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-state-icon">
-                    <Utensils size={28} />
-                  </div>
-                  <h3>No Food Items Found</h3>
-                  <p>We couldn't find any dish matching "{searchQuery}". Try searching for another meal or beverage.</p>
-                  <button 
-                    type="button" 
-                    onClick={handleClearSearch} 
-                    className="btn btn-primary btn-sm"
-                  >
-                    View All Items
-                  </button>
-                </div>
-              ) : (
-                <div className="category-scroll-container">
-                  {searchResults.map((food) => (
-                    <div key={food.id} className="category-scroll-card-wrapper">
-                      <FoodCard food={food} />
-                    </div>
-                  ))}
-                </div>
-              )}
+              <h3>No Food Items Found</h3>
+              <p>
+                We couldn't find any dishes under "{selectedCategory}" matching "{searchQuery}".
+              </p>
+              <button
+                type="button"
+                onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
+                className="btn btn-primary btn-sm"
+              >
+                Show All Menu Dishes
+              </button>
             </div>
           ) : (
-            /* Horizontally Scrollable Categories (Breakfast, Lunch, Snacks, Beverages) */
-            <div className="category-sections-list">
-              {categoriesToRender.map((catName) => {
-                const catMeta = CATEGORIES.find((c) => c.name === catName) || {};
-                const catFoods = getFoodsByCategory(catName);
-
-                return (
-                  <CategoryScrollRow
-                    key={catName}
-                    title={catName}
-                    subtitle={catMeta.subtitle}
-                    icon={catMeta.icon}
-                    foods={catFoods}
-                    categoryKey={catName}
-                  />
-                );
-              })}
+            <div className="compact-menu-grid">
+              {filteredFoods.map((food) => (
+                <div key={food.id} className="grid-card-cell">
+                  <FoodCard food={food} compact={false} />
+                </div>
+              ))}
             </div>
           )}
         </div>

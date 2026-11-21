@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
-import { ShoppingBag, Check, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Check } from 'lucide-react';
 import './FoodCard.css';
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';
 
-const FoodCard = ({ food }) => {
+const FoodCard = ({ food, compact = false }) => {
   const { addToCart, cartItems } = useCart();
   const { showToast } = useToast();
   const [justAdded, setJustAdded] = useState(false);
@@ -30,7 +30,7 @@ const FoodCard = ({ food }) => {
   };
 
   return (
-    <div className={`food-card ${!food.available ? 'food-card-unavailable' : ''}`}>
+    <div className={`food-card ${compact ? 'food-card-compact' : ''} ${!food.available ? 'food-card-unavailable' : ''}`}>
       {/* Food Image Container */}
       <div className="food-card-image-box">
         <img 
@@ -82,11 +82,11 @@ const FoodCard = ({ food }) => {
           >
             {justAdded ? (
               <>
-                <Check size={15} /> Added!
+                <Check size={14} /> Added!
               </>
             ) : (
               <>
-                <ShoppingBag size={15} /> {food.available ? 'Add to Cart' : 'Sold Out'}
+                <ShoppingBag size={14} /> {food.available ? 'Add to Cart' : 'Sold Out'}
               </>
             )}
           </button>
