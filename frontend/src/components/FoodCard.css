@@ -6,23 +6,23 @@
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .food-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
   border-color: var(--border-strong);
 }
 
 .food-card-unavailable {
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
 .food-card-image-box {
   position: relative;
   width: 100%;
-  height: 185px;
+  height: 190px;
   background-color: var(--bg-card-alt);
   overflow: hidden;
 }
@@ -31,11 +31,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.food-card:hover .food-card-img {
-  transform: scale(1.03);
+  display: block;
 }
 
 .food-card-badges {
@@ -46,20 +42,35 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 2;
 }
 
 .food-badge-category {
-  background-color: #0F172A;
+  background-color: var(--secondary);
   color: #FFFFFF;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-sm);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.in-cart-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: var(--secondary);
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-xs);
+  z-index: 2;
 }
 
 .food-card-body {
-  padding: 1.25rem;
+  padding: 1.15rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -69,15 +80,15 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--secondary);
-  margin-bottom: 0.4rem;
-  line-height: 1.35;
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
 }
 
 .food-card-desc {
-  font-size: 0.84rem;
+  font-size: 0.825rem;
   color: var(--text-muted);
   line-height: 1.45;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.15rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -90,7 +101,8 @@
   align-items: center;
   justify-content: space-between;
   border-top: 1px solid var(--border-color);
-  padding-top: 0.9rem;
+  padding-top: 0.85rem;
+  margin-top: auto;
 }
 
 .food-card-price-box {
@@ -99,11 +111,11 @@
 }
 
 .price-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
   color: var(--text-light);
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .price-amount {

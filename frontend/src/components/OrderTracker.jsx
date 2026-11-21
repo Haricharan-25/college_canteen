@@ -1,13 +1,13 @@
 import React from 'react';
-import { CheckCircle, Clock, ChefHat, CheckSquare, BellRing } from 'lucide-react';
+import { CheckCircle2, Clock, ChefHat, CheckSquare, BellRing, Check } from 'lucide-react';
 import './OrderTracker.css';
 
 const STEPS = [
-  { key: 'Pending', label: 'Order Received', desc: 'Sent to canteen', icon: Clock },
-  { key: 'Accepted', label: 'Accepted', desc: 'Canteen confirmed', icon: CheckCircle },
-  { key: 'Preparing', label: 'Preparing Food', desc: 'Chef cooking fresh', icon: ChefHat },
-  { key: 'Ready', label: 'Ready for Pickup', desc: 'Collect at counter', icon: BellRing },
-  { key: 'Completed', label: 'Order Completed', desc: 'Picked up by student', icon: CheckSquare },
+  { key: 'Pending', label: 'Order Received', desc: 'Queued at canteen', icon: Clock },
+  { key: 'Accepted', label: 'Confirmed', desc: 'Staff accepted order', icon: CheckCircle2 },
+  { key: 'Preparing', label: 'Preparing Food', desc: 'Cooking fresh in kitchen', icon: ChefHat },
+  { key: 'Ready', label: 'Ready for Pickup', desc: 'Collect at Counter #1', icon: BellRing },
+  { key: 'Completed', label: 'Completed', desc: 'Picked up by student', icon: CheckSquare },
 ];
 
 const OrderTracker = ({ status }) => {
@@ -31,16 +31,25 @@ const OrderTracker = ({ status }) => {
           const StepIcon = step.icon;
           const isDone = idx < currentIndex;
           const isCurrent = idx === currentIndex;
+          const isPending = idx > currentIndex;
 
           return (
             <div 
               key={step.key} 
-              className={`tracker-step-item ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
+              className={`tracker-step-item ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''} ${isPending ? 'pending' : ''}`}
             >
+              {/* Step indicator circle */}
               <div className="tracker-icon-circle">
-                <StepIcon size={18} />
+                {isDone ? (
+                  <Check size={16} strokeWidth={3} />
+                ) : (
+                  <StepIcon size={18} />
+                )}
               </div>
+
+              {/* Step title & description */}
               <div className="tracker-step-info">
+                <span className="tracker-step-number">Step {idx + 1}</span>
                 <span className="tracker-step-title">{step.label}</span>
                 <span className="tracker-step-desc">{step.desc}</span>
               </div>

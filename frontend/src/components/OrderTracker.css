@@ -21,7 +21,7 @@
   flex: 1;
 }
 
-/* Connecting solid border line */
+/* Connecting solid border line between steps */
 .tracker-step-item:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -34,7 +34,11 @@
 }
 
 .tracker-step-item.done:not(:last-child)::after {
-  background-color: var(--primary);
+  background-color: var(--success);
+}
+
+.tracker-step-item.current:not(:last-child)::after {
+  background-color: var(--border-color);
 }
 
 .tracker-icon-circle {
@@ -52,28 +56,42 @@
   transition: all 0.2s ease;
 }
 
+/* Done step */
+.tracker-step-item.done .tracker-icon-circle {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: #FFFFFF;
+}
+
+/* Current step */
 .tracker-step-item.current .tracker-icon-circle {
   background-color: var(--primary);
   border-color: var(--primary);
   color: #FFFFFF;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
 }
 
-.tracker-step-item.done .tracker-icon-circle {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #FFFFFF;
-}
-
+/* Step text info */
 .tracker-step-info {
   margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.tracker-step-number {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-light);
+  letter-spacing: 0.04em;
 }
 
 .tracker-step-title {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-muted);
+  margin-top: 0.1rem;
 }
 
 .tracker-step-item.current .tracker-step-title {
@@ -86,15 +104,17 @@
 
 .tracker-step-desc {
   display: block;
-  font-size: 0.75rem;
-  color: var(--text-light);
+  font-size: 0.72rem;
+  color: var(--text-muted);
   margin-top: 0.15rem;
 }
 
-@media (max-width: 680px) {
+/* Responsive vertical mode for mobile screens */
+@media (max-width: 720px) {
   .tracker-steps-line-container {
     flex-direction: column;
     gap: 1.25rem;
+    padding-left: 0.5rem;
   }
 
   .tracker-step-item {
@@ -108,7 +128,7 @@
     top: 40px;
     left: 20px;
     width: 2px;
-    height: 100%;
+    height: calc(100% - 16px);
   }
 
   .tracker-step-info {

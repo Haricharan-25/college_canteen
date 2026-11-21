@@ -41,9 +41,11 @@ const OrderHistory = () => {
       case 'Completed':
         return <span className="badge badge-success">{status}</span>;
       case 'Ready':
-        return <span className="badge badge-primary">{status} (Pick up!)</span>;
+        return <span className="badge badge-success">{status} (Pick up!)</span>;
       case 'Preparing':
         return <span className="badge badge-accent">{status}</span>;
+      case 'Accepted':
+        return <span className="badge badge-primary">{status}</span>;
       default:
         return <span className="badge badge-neutral">{status}</span>;
     }
@@ -68,24 +70,28 @@ const OrderHistory = () => {
           <div>
             <h1 className="history-title">My Canteen Orders</h1>
             <p className="history-subtitle">
-              Review past purchases, current active meals, and real-time cooking progress.
+              Review past purchases, current active orders, and real-time cooking progress.
             </p>
           </div>
 
-          <button onClick={loadOrders} className="btn btn-outline btn-sm">
+          <button 
+            type="button"
+            onClick={loadOrders} 
+            className="btn btn-outline btn-sm"
+          >
             <RefreshCw size={14} /> Refresh Orders
           </button>
         </div>
 
         {loading ? (
           <div className="center-box">
-            <div className="loading-spinner"></div>
+            <div className="loading-spinner" />
             <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Retrieving your order records...</p>
           </div>
         ) : orders.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">
-              <Clock size={32} />
+              <Clock size={28} />
             </div>
             <h3>No Orders Placed Yet</h3>
             <p>You haven't ordered anything from the campus canteen yet. Try our tasty meals today!</p>
@@ -99,13 +105,13 @@ const OrderHistory = () => {
               <div key={ord.id} className="card history-order-card">
                 <div className="order-card-header">
                   <div className="order-id-group">
-                    <span className="order-id-label">Order Number</span>
+                    <span className="order-id-label">Order Reference</span>
                     <strong className="order-id-val">{ord.orderNumber}</strong>
                   </div>
 
                   <div className="order-meta-group">
                     <span className="order-date-time">
-                      <Calendar size={14} /> {formatDate(ord.createdAt)}
+                      <Calendar size={13} /> {formatDate(ord.createdAt)}
                     </span>
                     {getStatusBadge(ord.status)}
                   </div>
@@ -128,7 +134,7 @@ const OrderHistory = () => {
                   </div>
 
                   <Link to={`/track/${ord.orderNumber}`} className="btn btn-primary btn-sm view-track-btn">
-                    Track Status & Receipt <ChevronRight size={16} />
+                    Track Status & Receipt <ChevronRight size={15} />
                   </Link>
                 </div>
               </div>

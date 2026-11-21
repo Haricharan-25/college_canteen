@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getFoods } from '../services/api';
 import FoodCard from '../components/FoodCard';
+import { FoodCardSkeleton } from '../components/Skeleton';
 import { 
   Search, 
   ArrowRight, 
@@ -12,7 +13,8 @@ import {
   ShieldCheck, 
   Coffee,
   CheckCircle2,
-  Utensils
+  Utensils,
+  X
 } from 'lucide-react';
 import './Home.css';
 
@@ -66,7 +68,10 @@ const Home = () => {
     }
   };
 
-  const popularFoods = foods.slice(0, 4);
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    fetchFoodItems();
+  };
 
   return (
     <div className="home-page">
@@ -75,62 +80,68 @@ const Home = () => {
         <div className="container hero-container">
           <div className="hero-content">
             <span className="badge badge-primary hero-badge">
-              <Sparkles size={14} /> Smart College Dining
+              <Sparkles size={13} /> College Canteen Ordering
             </span>
             <h1 className="hero-title">
-              Skip The Canteen Queue. Order Food Online, Pick Up Fresh.
+              Skip The Long Queues. Order Fresh Food Online.
             </h1>
             <p className="hero-subtitle">
-              Welcome back, <strong>{user ? user.name : 'Student'}</strong>! Browse freshly prepared meals, track real-time kitchen preparation, and collect your food without waiting in rush-hour queues.
+              Welcome, <strong>{user ? user.name : 'Student'}</strong>! Browse freshly prepared meals, track your order's live kitchen status, and collect your food without waiting in break-time queues.
             </p>
 
             {/* Quick Search Bar */}
             <div className="hero-search-bar">
-              <Search size={20} className="search-icon" />
+              <Search size={18} className="search-icon" />
               <input
                 type="text"
-                placeholder="Search dosa, biryani, coffee, sandwiches..."
+                placeholder="Search food by name (e.g. Masala Dosa, Biryani, Chai)..."
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="search-input"
               />
               {searchQuery && (
                 <button 
+                  type="button"
                   className="clear-search-btn"
-                  onClick={() => { setSearchQuery(''); fetchFoodItems(); }}
+                  onClick={handleClearSearch}
+                  aria-label="Clear search"
                 >
-                  Clear
+                  <X size={16} />
                 </button>
               )}
             </div>
 
             <div className="hero-quick-features">
               <div className="feature-item">
-                <CheckCircle2 size={16} className="feature-check" />
-                <span>Live Kitchen Tracking</span>
+                <CheckCircle2 size={15} className="feature-check" />
+                <span>Real-Time Kitchen Tracking</span>
               </div>
               <div className="feature-item">
-                <CheckCircle2 size={16} className="feature-check" />
-                <span>Zero Queue Waiting</span>
+                <CheckCircle2 size={15} className="feature-check" />
+                <span>Zero Break Queue Delay</span>
               </div>
               <div className="feature-item">
-                <CheckCircle2 size={16} className="feature-check" />
-                <span>Affordable Student Pricing</span>
+                <CheckCircle2 size={15} className="feature-check" />
+                <span>Subsidized Student Pricing</span>
               </div>
             </div>
           </div>
 
           <div className="hero-banner-visual">
-            <div className="hero-feature-card">
+            <div className="hero-feature-card card">
               <div className="hero-feature-header">
-                <span className="badge badge-accent">Peak Lunch Hours</span>
-                <span className="hero-time">12:30 PM - 2:00 PM</span>
+                <span className="badge badge-accent">Peak Lunch Break</span>
+                <span className="hero-time">12:30 PM – 2:00 PM</span>
               </div>
-              <h3 className="hero-banner-heading">Today's Chef Specials Ready In 5 Mins</h3>
-              <p className="hero-banner-text">Hot South Indian Dosa & Fresh Dum Biryani ready at Counter #2.</p>
-              <Link to="/menu" className="btn btn-primary btn-sm">
-                View Full Menu <ArrowRight size={15} />
-              </Link>
+              <h3 className="hero-banner-heading">Chef's Specials Prepared Fresh Every Morning</h3>
+              <p className="hero-banner-text">
+                Crispy Dosas, Steaming Dum Biryani, and Hot Filter Coffee ready at Counter #1.
+              </p>
+              <div className="hero-card-footer">
+                <Link to="/menu" className="btn btn-primary btn-sm">
+                  Explore Full Menu <ArrowRight size={15} />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -141,14 +152,15 @@ const Home = () => {
         <div className="container">
           <div className="section-header-row">
             <div>
-              <h2 className="section-title">Explore Food Categories</h2>
-              <p className="section-desc">Select your desired meal category to view fresh available dishes.</p>
+              <h2 className="section-title">Browse By Category</h2>
+              <p className="section-desc">Select a category to view fresh available dishes.</p>
             </div>
           </div>
 
           <div className="category-pills-row">
             {CATEGORIES.map((cat) => (
               <button
+                type="button"
                 key={cat.name}
                 onClick={() => { setSelectedCategory(cat.name); setSearchQuery(''); }}
                 className={`category-pill ${selectedCategory === cat.name ? 'active' : ''}`}
@@ -160,16 +172,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured / Popular Food Items Grid */}
+      {/* Food Items Grid Section */}
       <section className="featured-section">
         <div className="container">
           <div className="section-header-row">
             <div>
               <div className="section-title-with-icon">
-                <Flame size={22} className="text-accent" />
-                <h2 className="section-title">Popular & Featured Canteen Bites</h2>
+                <Flame size={20} className="text-accent" />
+                <h2 className="section-title">
+                  {selectedCategory === 'All' ? 'Popular & Featured Canteen Bites' : `${selectedCategory} Menu`}
+                </h2>
               </div>
-              <p className="section-desc">Student favorites freshly prepared everyday.</p>
+              <p className="section-desc">Freshly prepared everyday for students and campus staff.</p>
             </div>
             <Link to="/menu" className="btn btn-outline btn-sm">
               See All Items ({foods.length})
@@ -177,18 +191,20 @@ const Home = () => {
           </div>
 
           {loading ? (
-            <div className="center-box">
-              <div className="loading-spinner"></div>
-              <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Loading delicious food...</p>
+            <div className="food-grid">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <FoodCardSkeleton key={idx} />
+              ))}
             </div>
           ) : foods.length === 0 ? (
             <div className="empty-state">
               <div className="empty-state-icon">
-                <Utensils size={32} />
+                <Utensils size={28} />
               </div>
-              <h3>No food items found</h3>
+              <h3>No Food Items Found</h3>
               <p>We couldn't find any food items matching "{searchQuery}". Try searching for another dish.</p>
               <button 
+                type="button"
                 onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
                 className="btn btn-primary btn-sm"
               >

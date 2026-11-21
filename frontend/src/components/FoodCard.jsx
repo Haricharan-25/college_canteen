@@ -1,42 +1,72 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { ShoppingBag, Check } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import { ShoppingBag, Check, AlertCircle } from 'lucide-react';
 import './FoodCard.css';
 
+const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';
+
 const FoodCard = ({ food }) => {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
+  const { showToast } = useToast();
   const [justAdded, setJustAdded] = useState(false);
+  const [imgSrc, setImgSrc] = useState(food.imageUrl || DEFAULT_IMAGE);
+
+  // Check if this food item is currently in the cart
+  const itemInCart = cartItems.find((item) => item.id === food.id);
+  const cartQuantity = itemInCart ? itemInCart.quantity : 0;
 
   const handleAddToCart = () => {
-    if (!food.available) return;
+    if (!food.available) {
+      showToast(`Sorry, "${food.name}" is currently sold out.`, 'error');
+      return;
+    }
     const success = addToCart(food, 1);
     if (success) {
       setJustAdded(true);
+      showToast(`Added ${food.name} to your cart!`, 'success');
       setTimeout(() => setJustAdded(false), 1200);
     }
   };
 
   return (
     <div className={`food-card ${!food.available ? 'food-card-unavailable' : ''}`}>
+      {/* Food Image Container */}
       <div className="food-card-image-box">
         <img 
-          src={food.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80'} 
+          src={imgSrc} 
           alt={food.name}
           className="food-card-img" 
           loading="lazy"
+          onError={() => setImgSrc(DEFAULT_IMAGE)}
         />
+        
+        {/* Badges Overlay */}
         <div className="food-card-badges">
           <span className="food-badge-category">{food.category}</span>
           <span className={`badge ${food.available ? 'badge-success' : 'badge-danger'}`}>
             {food.available ? 'Available' : 'Sold Out'}
           </span>
         </div>
+
+        {/* In-Cart Tag if already present */}
+        {cartQuantity > 0 && (
+          <div className="in-cart-indicator">
+            In Cart: {cartQuantity}
+          </div>
+        )}
       </div>
 
+      {/* Food Card Body */}
       <div className="food-card-body">
-        <h3 className="food-card-title">{food.name}</h3>
-        <p className="food-card-desc">{food.description}</p>
+        <h3 className="food-card-title" title={food.name}>
+          {food.name}
+        </h3>
+        <p className="food-card-desc" title={food.description}>
+          {food.description || 'Freshly prepared canteen delicacy made to order.'}
+        </p>
         
+        {/* Footer with Price and Add to Cart Button */}
         <div className="food-card-footer">
           <div className="food-card-price-box">
             <span className="price-label">Price</span>
@@ -44,17 +74,19 @@ const FoodCard = ({ food }) => {
           </div>
 
           <button
+            type="button"
             onClick={handleAddToCart}
             disabled={!food.available}
-            className={`btn btn-sm ${justAdded ? 'btn-secondary' : 'btn-primary'} ${!food.available ? 'btn-disabled' : ''}`}
+            className={`btn btn-sm ${justAdded ? 'btn-success' : 'btn-primary'} ${!food.available ? 'btn-disabled' : ''}`}
+            aria-label={food.available ? `Add ${food.name} to cart` : `${food.name} is sold out`}
           >
             {justAdded ? (
               <>
-                <Check size={16} /> Added!
+                <Check size={15} /> Added!
               </>
             ) : (
               <>
-                <ShoppingBag size={16} /> {food.available ? 'Add to Cart' : 'Sold Out'}
+                <ShoppingBag size={15} /> {food.available ? 'Add to Cart' : 'Sold Out'}
               </>
             )}
           </button>

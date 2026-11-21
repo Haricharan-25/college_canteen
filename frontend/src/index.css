@@ -1,55 +1,72 @@
-/* CampusBite Theme Design System
-   Primary: #2563EB
-   Secondary / Heading: #0F172A
-   Background: #F8FAFC
-   Cards / Surface: #FFFFFF
-   Accent: #F59E0B
-   Success: #16A34A
-   Danger: #DC2626
-   Text Primary: #1E293B
-   Text Secondary: #64748B
-   Border: #E2E8F0
-   Strict rule: NO GRADIENTS anywhere. Pure solid tones, crisp borders & clean shadows.
-*/
+/* ==========================================================================
+   CampusBite Production Design System
+   Strict Design Rules:
+   - Absolutely NO GRADIENTS anywhere. Pure solid colors only.
+   - Primary blue: #2563EB (Hover: #1D4ED8, Light: #EFF6FF)
+   - Dark navy: #0F172A (Hover: #1E293B, Light: #F1F5F9)
+   - Background: #F8FAFC
+   - Cards / Surface: #FFFFFF
+   - Green (Success / Available): #16A34A (Light: #DCFCE7, Border: #BBF7D0)
+   - Amber (Pending / Warning): #D97706 (Light: #FEF3C7, Border: #FDE68A)
+   - Red (Sold out / Danger): #DC2626 (Light: #FEE2E2, Border: #FECACA)
+   - Text Primary: #0F172A, Text Secondary: #475569, Text Muted: #64748B
+   - Borders: #E2E8F0 (Strong: #CBD5E1)
+   ========================================================================== */
 
 :root {
   --primary: #2563EB;
   --primary-hover: #1D4ED8;
   --primary-light: #EFF6FF;
-  
+  --primary-border: #BFDBFE;
+
   --secondary: #0F172A;
   --secondary-hover: #1E293B;
-  
+  --secondary-light: #F1F5F9;
+
   --bg-page: #F8FAFC;
   --bg-card: #FFFFFF;
   --bg-card-alt: #F1F5F9;
-  
-  --text-main: #1E293B;
+  --bg-hover: #F8FAFC;
+
+  --text-main: #0F172A;
+  --text-secondary: #475569;
   --text-muted: #64748B;
   --text-light: #94A3B8;
-  
+
   --border-color: #E2E8F0;
   --border-strong: #CBD5E1;
-  
-  --accent: #F59E0B;
-  --accent-light: #FEF3C7;
+
   --success: #16A34A;
+  --success-hover: #15803D;
   --success-light: #DCFCE7;
+  --success-border: #BBF7D0;
+
+  --accent: #D97706;
+  --accent-light: #FEF3C7;
+  --accent-border: #FDE68A;
+
   --danger: #DC2626;
+  --danger-hover: #B91C1C;
   --danger-light: #FEE2E2;
+  --danger-border: #FECACA;
+
   --info: #0284C7;
   --info-light: #E0F2FE;
+  --info-border: #BAE6FD;
 
-  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
-  
+
+  --radius-xs: 4px;
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
-  
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -58,12 +75,18 @@
   padding: 0;
 }
 
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-page);
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -76,7 +99,8 @@ button {
   cursor: pointer;
   border: none;
   outline: none;
-  transition: all 0.2s ease-in-out;
+  background: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
 input, select, textarea {
@@ -84,7 +108,7 @@ input, select, textarea {
   outline: none;
 }
 
-/* App Container */
+/* Base Layout Structure */
 .app-container {
   min-height: 100vh;
   display: flex;
@@ -93,27 +117,35 @@ input, select, textarea {
 
 .main-content {
   flex: 1;
-  padding-bottom: 3rem;
+  padding-bottom: 3.5rem;
 }
 
 .container {
-  max-width: 1240px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 1.25rem;
 }
 
-/* Buttons */
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.625rem 1.25rem;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
 .btn:active {
@@ -155,7 +187,16 @@ input, select, textarea {
 }
 
 .btn-danger:hover {
-  background-color: #B91C1C;
+  background-color: var(--danger-hover);
+}
+
+.btn-success {
+  background-color: var(--success);
+  color: #FFFFFF;
+}
+
+.btn-success:hover {
+  background-color: var(--success-hover);
 }
 
 .btn-sm {
@@ -166,7 +207,8 @@ input, select, textarea {
 
 .btn-lg {
   padding: 0.875rem 1.75rem;
-  font-size: 1.0625rem;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
 }
 
 .btn-disabled, .btn:disabled {
@@ -175,43 +217,53 @@ input, select, textarea {
   pointer-events: none;
 }
 
-/* Badges */
+/* ==========================================================================
+   Badges & Pills
+   ========================================================================== */
 .badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.3rem;
   padding: 0.25rem 0.65rem;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: var(--radius-full);
-  text-transform: capitalize;
+  line-height: 1.2;
 }
 
 .badge-success {
   background-color: var(--success-light);
   color: var(--success);
+  border: 1px solid var(--success-border);
 }
 
 .badge-danger {
   background-color: var(--danger-light);
   color: var(--danger);
+  border: 1px solid var(--danger-border);
 }
 
 .badge-accent {
   background-color: var(--accent-light);
-  color: #B45309;
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
 }
 
 .badge-primary {
   background-color: var(--primary-light);
   color: var(--primary);
+  border: 1px solid var(--primary-border);
 }
 
 .badge-neutral {
   background-color: var(--bg-card-alt);
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 
-/* Card */
+/* ==========================================================================
+   Card Component
+   ========================================================================== */
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -219,7 +271,9 @@ input, select, textarea {
   box-shadow: var(--shadow-sm);
 }
 
-/* Form Styles */
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -229,7 +283,7 @@ input, select, textarea {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
 }
 
 .form-control {
@@ -248,7 +302,9 @@ input, select, textarea {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Notifications / Alert box */
+/* ==========================================================================
+   Alerts & Notifications
+   ========================================================================== */
 .alert {
   padding: 0.875rem 1.25rem;
   border-radius: var(--radius-md);
@@ -256,28 +312,139 @@ input, select, textarea {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .alert-success {
   background-color: var(--success-light);
-  color: #15803D;
-  border: 1px solid #BBF7D0;
+  color: #14532D;
+  border: 1px solid var(--success-border);
 }
 
 .alert-danger {
   background-color: var(--danger-light);
-  color: #B91C1C;
-  border: 1px solid #FECACA;
+  color: #7F1D1D;
+  border: 1px solid var(--danger-border);
 }
 
 .alert-info {
   background-color: var(--info-light);
-  color: #0369A1;
-  border: 1px solid #BAE6FD;
+  color: #0C4A6E;
+  border: 1px solid var(--info-border);
 }
 
-/* Loading & Empty States */
+/* ==========================================================================
+   Toast Portal System
+   ========================================================================== */
+.toast-portal-container {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: 380px;
+  width: calc(100% - 2.5rem);
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: toastSlideIn 0.22s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.toast-item.toast-success {
+  border-left: 4px solid var(--success);
+  color: #14532D;
+}
+.toast-item.toast-success .toast-icon {
+  color: var(--success);
+}
+
+.toast-item.toast-error {
+  border-left: 4px solid var(--danger);
+  color: #7F1D1D;
+}
+.toast-item.toast-error .toast-icon {
+  color: var(--danger);
+}
+
+.toast-item.toast-info {
+  border-left: 4px solid var(--primary);
+  color: #1E3A8A;
+}
+.toast-item.toast-info .toast-icon {
+  color: var(--primary);
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+  color: var(--text-main);
+}
+
+.toast-close-btn {
+  color: var(--text-muted);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+}
+
+.toast-close-btn:hover {
+  color: var(--secondary);
+  background-color: var(--bg-card-alt);
+}
+
+/* ==========================================================================
+   Loading Skeletons (SOLID COLORS - NO GRADIENTS)
+   ========================================================================== */
+.skeleton-box {
+  background-color: #E2E8F0;
+  border-radius: var(--radius-sm);
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
 .loading-spinner {
   display: inline-block;
   width: 32px;
@@ -285,7 +452,7 @@ input, select, textarea {
   border: 3px solid var(--border-color);
   border-radius: 50%;
   border-top-color: var(--primary);
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.75s linear infinite;
 }
 
 @keyframes spin {
@@ -301,6 +468,9 @@ input, select, textarea {
   text-align: center;
 }
 
+/* ==========================================================================
+   Empty States
+   ========================================================================== */
 .empty-state {
   background-color: var(--bg-card);
   border: 1px dashed var(--border-strong);
@@ -311,8 +481,8 @@ input, select, textarea {
 }
 
 .empty-state-icon {
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   background-color: var(--bg-card-alt);
   color: var(--text-muted);
   border-radius: 50%;
@@ -324,6 +494,7 @@ input, select, textarea {
 
 .empty-state h3 {
   font-size: 1.25rem;
+  font-weight: 700;
   color: var(--secondary);
   margin-bottom: 0.5rem;
 }
@@ -333,4 +504,5 @@ input, select, textarea {
   max-width: 440px;
   margin: 0 auto 1.5rem;
   font-size: 0.9375rem;
+  line-height: 1.5;
 }

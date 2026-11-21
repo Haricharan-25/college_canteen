@@ -8,8 +8,10 @@ import {
   Calendar, 
   User, 
   RefreshCw, 
-  CheckCircle,
-  AlertCircle
+  CheckCircle2,
+  AlertCircle,
+  MapPin,
+  Clock
 } from 'lucide-react';
 import './OrderTracking.css';
 
@@ -22,7 +24,7 @@ const OrderTracking = () => {
 
   useEffect(() => {
     fetchOrderDetails();
-    // Auto-poll status every 5 seconds to provide real-time updates when admin changes status
+    // Auto-poll status every 5 seconds to provide real-time updates when admin updates status
     const interval = setInterval(() => {
       fetchOrderDetails(true);
     }, 5000);
@@ -65,6 +67,16 @@ const OrderTracking = () => {
     });
   };
 
+  const getStatusBadgeClass = (st) => {
+    switch (st) {
+      case 'Completed': return 'badge-success';
+      case 'Ready': return 'badge-success';
+      case 'Preparing': return 'badge-accent';
+      case 'Accepted': return 'badge-primary';
+      default: return 'badge-neutral';
+    }
+  };
+
   return (
     <div className="tracking-page">
       <div className="container">
@@ -74,16 +86,17 @@ const OrderTracking = () => {
           </Link>
 
           <button 
+            type="button"
             onClick={() => fetchOrderDetails(false)} 
             className="btn btn-outline btn-sm refresh-status-btn"
           >
-            <RefreshCw size={14} className={refreshing ? 'spin-icon' : ''} /> Check Status Now
+            <RefreshCw size={14} className={refreshing ? 'spin-icon' : ''} /> Check Status
           </button>
         </div>
 
         {loading ? (
           <div className="center-box">
-            <div className="loading-spinner"></div>
+            <div className="loading-spinner" />
             <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Retrieving live order status...</p>
           </div>
         ) : error ? (
@@ -110,31 +123,41 @@ const OrderTracking = () => {
 
                 <div className="order-status-highlight">
                   <span className="status-label">Current Status</span>
-                  <span className="badge badge-primary status-badge-lg">{order.status}</span>
+                  <span className={`badge ${getStatusBadgeClass(order.status)} status-badge-lg`}>
+                    {order.status}
+                  </span>
                 </div>
               </div>
 
               {/* Graphical Step-by-step Progress Tracker */}
               <OrderTracker status={order.status} />
 
-              {/* Status explanation */}
+              {/* Status explanation alert */}
               <div className="status-info-banner">
                 {order.status === 'Pending' && (
-                  <p>Your order is queued in the canteen system waiting to be accepted by the staff.</p>
+                  <p>
+                    <Clock size={16} className="inline-icon text-accent" /> Your order is queued in the canteen system waiting to be accepted by the staff.
+                  </p>
                 )}
                 {order.status === 'Accepted' && (
-                  <p>Canteen staff confirmed your order and is allocating cooking ingredients.</p>
+                  <p>
+                    <CheckCircle2 size={16} className="inline-icon text-primary" /> Canteen staff confirmed your order and is allocating cooking ingredients.
+                  </p>
                 )}
                 {order.status === 'Preparing' && (
-                  <p>Your food is actively being cooked fresh on the kitchen stove/grill!</p>
+                  <p>
+                    <Clock size={16} className="inline-icon text-accent" /> Your food is actively being cooked fresh in the kitchen!
+                  </p>
                 )}
                 {order.status === 'Ready' && (
                   <p className="ready-alert">
-                    <CheckCircle size={16} /> <strong>Your food is ready!</strong> Please proceed to the canteen pickup counter with your Order ID.
+                    <CheckCircle2 size={18} /> <strong>Your food is ready!</strong> Please proceed to Canteen Counter #1 with your Order ID to pick up your meal.
                   </p>
                 )}
                 {order.status === 'Completed' && (
-                  <p>Order has been fulfilled and handed over. Enjoy your meal!</p>
+                  <p>
+                    <CheckCircle2 size={16} className="inline-icon text-success" /> Order has been fulfilled and handed over. Enjoy your meal!
+                  </p>
                 )}
               </div>
             </div>
@@ -164,7 +187,7 @@ const OrderTracking = () => {
               </div>
 
               <div className="card tracking-student-card">
-                <h3 className="section-subheading">Customer Information</h3>
+                <h3 className="section-subheading">Pickup & Student Details</h3>
                 <div className="info-pair">
                   <span className="info-label">Student Name:</span>
                   <strong className="info-val">{order.userName}</strong>
@@ -174,12 +197,12 @@ const OrderTracking = () => {
                   <span className="info-val">{order.userEmail}</span>
                 </div>
                 <div className="info-pair">
-                  <span className="info-label">Canteen Pickup:</span>
+                  <span className="info-label">Pickup Location:</span>
                   <span className="info-val">Main Campus Canteen, Counter #1</span>
                 </div>
                 <div className="info-pair">
                   <span className="info-label">Payment Method:</span>
-                  <span className="info-val">College ID / Campus Card (Paid)</span>
+                  <span className="info-val">Campus Card / College ID (Paid)</span>
                 </div>
               </div>
             </div>

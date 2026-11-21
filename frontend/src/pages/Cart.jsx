@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { createOrder } from '../services/api';
 import { 
   ShoppingBag, 
@@ -12,22 +13,47 @@ import {
   ShieldCheck, 
   Clock, 
   AlertTriangle,
-  Receipt
+  Receipt,
+  CheckCircle2
 } from 'lucide-react';
 import './Cart.css';
+
+const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotalAmount } = useCart();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [orderConfirmed, setOrderConfirmed] = useState(null);
 
+  const handleUpdateQuantity = (foodId, delta, itemName) => {
+    updateQuantity(foodId, delta);
+    if (delta > 0) {
+      showToast(`Increased ${itemName} quantity`, 'info');
+    } else {
+      showToast(`Decreased ${itemName} quantity`, 'info');
+    }
+  };
+
+  const handleRemoveItem = (foodId, itemName) => {
+    removeFromCart(foodId);
+    showToast(`Removed "${itemName}" from cart`, 'info');
+  };
+
+  const handleClearCart = () => {
+    if (window.confirm('Are you sure you want to clear all items in your cart?')) {
+      clearCart();
+      showToast('Cart cleared', 'info');
+    }
+  };
+
   const handlePlaceOrder = async () => {
     if (!user) {
-      alert('Please log in or select student mode to place an order.');
+      showToast('Please sign in or select student mode to place an order.', 'error');
       navigate('/login');
       return;
     }
@@ -52,12 +78,14 @@ const Cart = () => {
       const placedOrder = await createOrder(orderPayload);
       clearCart();
       setOrderConfirmed(placedOrder);
+      showToast(`Order #${placedOrder.orderNumber} placed successfully!`, 'success');
     } catch (err) {
       console.error(err);
       setErrorMsg(
         err.response?.data?.message || 
         'Failed to place order. Ensure food items are available and canteen service is running.'
       );
+      showToast('Could not place order. Please review your cart.', 'error');
     } finally {
       setLoading(false);
     }
@@ -69,18 +97,18 @@ const Cart = () => {
       <div className="container confirmation-wrapper">
         <div className="card confirmation-card">
           <div className="confirmation-icon-circle">
-            <Receipt size={36} color="#FFFFFF" />
+            <CheckCircle2 size={36} color="#FFFFFF" />
           </div>
 
           <span className="badge badge-success confirmation-badge">Order Confirmed</span>
           <h2 className="confirmation-heading">Your Food Order Has Been Placed!</h2>
           <p className="confirmation-sub">
-            The canteen staff has received your order and is getting ready to prepare your meal.
+            The canteen staff has received your order and started preparing your food.
           </p>
 
           <div className="order-receipt-box">
             <div className="receipt-row">
-              <span className="receipt-label">Order Reference ID:</span>
+              <span className="receipt-label">Order Number:</span>
               <strong className="receipt-value receipt-order-no">{orderConfirmed.orderNumber}</strong>
             </div>
             <div className="receipt-row">
@@ -124,9 +152,12 @@ const Cart = () => {
     <div className="cart-page">
       <div className="container">
         <div className="cart-header-row">
-          <h1 className="cart-page-title">Shopping Cart & Checkout</h1>
+          <div>
+            <h1 className="cart-page-title">Shopping Cart & Checkout</h1>
+            <p className="cart-page-sub">Review items and place order for canteen pickup.</p>
+          </div>
           <span className="cart-count-badge">
-            {cartItems.length} {cartItems.length === 1 ? 'dish' : 'dishes'} selected
+            {cartItems.length} {cartItems.length === 1 ? 'dish' : 'dishes'} in cart
           </span>
         </div>
 
@@ -140,14 +171,14 @@ const Cart = () => {
         {cartItems.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">
-              <ShoppingBag size={32} />
+              <ShoppingBag size={28} />
             </div>
             <h3>Your Canteen Cart is Empty</h3>
             <p>
               Hungry between classes? Browse our delicious canteen breakfast, lunch meals, and quick snacks!
             </p>
             <Link to="/menu" className="btn btn-primary">
-              Explore Canteen Menu <ArrowRight size={16} />
+              Explore Canteen Menu <ArrowRight size={15} />
             </Link>
           </div>
         ) : (
@@ -155,7 +186,7 @@ const Cart = () => {
             {/* Left Items Column */}
             <div className="cart-items-column">
               <div className="cart-items-header-bar">
-                <span>Food Item</span>
+                <span>Food Item & Quantity</span>
                 <span>Subtotal</span>
               </div>
 
@@ -166,42 +197,48 @@ const Cart = () => {
                   return (
                     <div key={item.id} className="cart-item-card card">
                       <img 
-                        src={item.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80'} 
+                        src={item.imageUrl || DEFAULT_IMAGE} 
                         alt={item.name} 
                         className="cart-item-thumb" 
+                        onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_IMAGE; }}
                       />
 
                       <div className="cart-item-details">
                         <span className="cart-item-category">{item.category}</span>
                         <h4 className="cart-item-name">{item.name}</h4>
-                        <span className="cart-item-unit-price">₹{item.price.toFixed(2)} each</span>
+                        <span className="cart-item-unit-price">₹{Number(item.price).toFixed(2)} each</span>
 
                         {/* Quantity Counter */}
                         <div className="cart-item-qty-row">
                           <div className="qty-counter-box">
                             <button
-                              onClick={() => updateQuantity(item.id, -1)}
+                              type="button"
+                              onClick={() => handleUpdateQuantity(item.id, -1, item.name)}
                               className="qty-btn"
-                              title="Decrease"
+                              title="Decrease quantity"
+                              aria-label="Decrease quantity"
                             >
-                              <Minus size={14} />
+                              <Minus size={13} />
                             </button>
                             <span className="qty-number">{item.quantity}</span>
                             <button
-                              onClick={() => updateQuantity(item.id, 1)}
+                              type="button"
+                              onClick={() => handleUpdateQuantity(item.id, 1, item.name)}
                               className="qty-btn"
-                              title="Increase"
+                              title="Increase quantity"
+                              aria-label="Increase quantity"
                             >
-                              <Plus size={14} />
+                              <Plus size={13} />
                             </button>
                           </div>
 
                           <button
-                            onClick={() => removeFromCart(item.id)}
+                            type="button"
+                            onClick={() => handleRemoveItem(item.id, item.name)}
                             className="cart-item-remove-btn"
                             title="Remove item"
                           >
-                            <Trash2 size={16} /> Remove
+                            <Trash2 size={14} /> Remove
                           </button>
                         </div>
                       </div>
@@ -216,9 +253,9 @@ const Cart = () => {
 
               <div className="cart-actions-footer">
                 <Link to="/menu" className="btn btn-outline btn-sm">
-                  Add More Items
+                  Add More Dishes
                 </Link>
-                <button onClick={clearCart} className="clear-cart-text-btn">
+                <button type="button" onClick={handleClearCart} className="clear-cart-text-btn">
                   Clear Cart
                 </button>
               </div>
@@ -232,10 +269,10 @@ const Cart = () => {
                 <div className="summary-calc-list">
                   <div className="summary-calc-row">
                     <span>Items Subtotal</span>
-                    <span>₹{cartTotalAmount.toFixed(2)}</span>
+                    <span className="calc-val">₹{cartTotalAmount.toFixed(2)}</span>
                   </div>
                   <div className="summary-calc-row">
-                    <span>Canteen Packaging Fee</span>
+                    <span>Canteen Packaging</span>
                     <span className="text-success font-semibold">FREE</span>
                   </div>
                   <div className="summary-calc-row">
@@ -244,12 +281,12 @@ const Cart = () => {
                   </div>
                 </div>
 
-                <div className="summary-divider"></div>
+                <div className="summary-divider" />
 
                 <div className="summary-total-row">
                   <div>
-                    <span className="total-title">Total Payable</span>
-                    <span className="total-tax-note">Inclusive of all college canteen taxes</span>
+                    <span className="total-title">Total Amount</span>
+                    <span className="total-tax-note">Inclusive of all college taxes</span>
                   </div>
                   <span className="total-amount-bold">₹{cartTotalAmount.toFixed(2)}</span>
                 </div>
@@ -258,13 +295,14 @@ const Cart = () => {
                 <div className="student-order-notice">
                   <ShieldCheck size={18} className="shield-icon" />
                   <div>
-                    <p className="notice-heading">Ordering as: <strong>{user?.name}</strong></p>
-                    <p className="notice-body">Direct MySQL order logging. No hidden convenience fees.</p>
+                    <p className="notice-heading">Ordering as: <strong>{user?.name || 'Student'}</strong></p>
+                    <p className="notice-body">Direct MySQL order dispatch. Collect at Counter #1.</p>
                   </div>
                 </div>
 
                 {/* Submit Checkout Button */}
                 <button
+                  type="button"
                   onClick={handlePlaceOrder}
                   disabled={loading}
                   className="btn btn-primary btn-lg place-order-btn"
@@ -273,7 +311,7 @@ const Cart = () => {
                     'Processing Order...'
                   ) : (
                     <>
-                      Confirm & Place Order (₹{cartTotalAmount.toFixed(2)}) <ArrowRight size={18} />
+                      Confirm & Place Order (₹{cartTotalAmount.toFixed(2)}) <ArrowRight size={17} />
                     </>
                   )}
                 </button>

@@ -8,6 +8,7 @@ import {
   updateFood, 
   deleteFood 
 } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import { 
   Utensils, 
   ShoppingBag, 
@@ -22,14 +23,17 @@ import {
   AlertTriangle,
   ChevronRight,
   TrendingUp,
-  X
+  X,
+  Check
 } from 'lucide-react';
 import './AdminDashboard.css';
 
 const CATEGORIES = ['Breakfast', 'Lunch', 'Snacks', 'Beverages'];
 const STATUSES = ['ALL', 'Pending', 'Accepted', 'Preparing', 'Ready', 'Completed'];
+const DEFAULT_FOOD_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150';
 
 const AdminDashboard = () => {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState('overview'); // overview, orders, foods
   const [stats, setStats] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -49,17 +53,9 @@ const AdminDashboard = () => {
     available: true,
   });
 
-  // Action status message
-  const [toast, setToast] = useState('');
-
   useEffect(() => {
     loadAllAdminData();
   }, [selectedStatus]);
-
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(''), 3000);
-  };
 
   const loadAllAdminData = async () => {
     setLoading(true);
@@ -74,6 +70,7 @@ const AdminDashboard = () => {
       setFoods(foodsData);
     } catch (err) {
       console.error('Failed to load admin data:', err);
+      showToast('Could not fetch admin data from backend', 'error');
     } finally {
       setLoading(false);
     }
@@ -82,10 +79,10 @@ const AdminDashboard = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await updateOrderStatus(orderId, newStatus);
-      showToast(`Order status updated to "${newStatus}"!`);
+      showToast(`Order status updated to "${newStatus}"`, 'success');
       loadAllAdminData();
     } catch (err) {
-      alert('Failed to update status: ' + (err.response?.data?.message || err.message));
+      showToast('Failed to update status: ' + (err.response?.data?.message || err.message), 'error');
     }
   };
 
@@ -119,7 +116,7 @@ const AdminDashboard = () => {
   const handleSaveFood = async (e) => {
     e.preventDefault();
     if (!foodForm.name || !foodForm.price) {
-      alert('Please fill out the food name and price');
+      showToast('Please provide both food name and price', 'error');
       return;
     }
 
@@ -129,18 +126,18 @@ const AdminDashboard = () => {
           ...foodForm,
           price: parseFloat(foodForm.price),
         });
-        showToast(`Updated "${foodForm.name}" successfully!`);
+        showToast(`Updated "${foodForm.name}" successfully!`, 'success');
       } else {
         await addFood({
           ...foodForm,
           price: parseFloat(foodForm.price),
         });
-        showToast(`Added new food "${foodForm.name}"!`);
+        showToast(`Added new dish "${foodForm.name}"!`, 'success');
       }
       setIsModalOpen(false);
       loadAllAdminData();
     } catch (err) {
-      alert('Failed to save food: ' + (err.response?.data?.message || err.message));
+      showToast('Failed to save food: ' + (err.response?.data?.message || err.message), 'error');
     }
   };
 
@@ -148,10 +145,10 @@ const AdminDashboard = () => {
     if (window.confirm(`Are you sure you want to permanently delete "${food.name}"?`)) {
       try {
         await deleteFood(food.id);
-        showToast(`Food "${food.name}" deleted successfully.`);
+        showToast(`Food "${food.name}" deleted successfully.`, 'info');
         loadAllAdminData();
       } catch (err) {
-        alert('Could not delete food. It may be linked to existing order records.');
+        showToast('Could not delete food. It may be linked to existing orders.', 'error');
       }
     }
   };
@@ -162,10 +159,20 @@ const AdminDashboard = () => {
         ...food,
         available: !food.available,
       });
-      showToast(`Toggled ${food.name} to ${!food.available ? 'Available' : 'Unavailable'}`);
+      showToast(`Set "${food.name}" to ${!food.available ? 'Available' : 'Sold Out'}`, 'info');
       loadAllAdminData();
     } catch (err) {
-      alert('Failed to toggle availability.');
+      showToast('Failed to toggle availability.', 'error');
+    }
+  };
+
+  const getOrderStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'Completed': return 'badge-success';
+      case 'Ready': return 'badge-success';
+      case 'Preparing': return 'badge-accent';
+      case 'Accepted': return 'badge-primary';
+      default: return 'badge-neutral';
     }
   };
 
@@ -174,64 +181,69 @@ const AdminDashboard = () => {
       {/* Admin Sidebar Navigation */}
       <aside className="admin-sidebar">
         <div className="admin-sidebar-header">
-          <span className="admin-badge-role">Canteen Administrator</span>
+          <span className="admin-badge-role">Canteen Administration</span>
           <h2 className="admin-panel-title">Operations Desk</h2>
         </div>
 
         <nav className="admin-nav-menu">
           <button
+            type="button"
             onClick={() => setActiveTab('overview')}
             className={`admin-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
           >
             <TrendingUp size={18} /> Overview & Analytics
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('orders')}
             className={`admin-nav-item ${activeTab === 'orders' ? 'active' : ''}`}
           >
-            <ShoppingBag size={18} /> Manage Live Orders
+            <ShoppingBag size={18} /> Live Orders ({orders.length})
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('foods')}
             className={`admin-nav-item ${activeTab === 'foods' ? 'active' : ''}`}
           >
-            <Utensils size={18} /> Food Item Catalog
+            <Utensils size={18} /> Menu Catalog ({foods.length})
           </button>
         </nav>
 
         <div className="sidebar-footer-info">
-          <span className="canteen-status-dot"></span>
+          <span className="canteen-status-dot" />
           <span>Canteen Open & Online</span>
         </div>
       </aside>
 
       {/* Main Admin Workspace */}
       <main className="admin-main-viewport">
-        {/* Toast alert */}
-        {toast && (
-          <div className="admin-toast-banner">
-            <CheckCircle2 size={16} /> {toast}
-          </div>
-        )}
-
         <div className="admin-top-action-bar">
           <div>
             <h1 className="admin-workspace-title">
               {activeTab === 'overview' && 'Canteen Operations Dashboard'}
               {activeTab === 'orders' && 'Student Food Orders Management'}
-              {activeTab === 'foods' && 'Menu Catalog & Price Management'}
+              {activeTab === 'foods' && 'Menu Catalog & Pricing Management'}
             </h1>
             <p className="admin-workspace-sub">
-              Logged into CampusBite centralized MySQL database. Real-time updates active.
+              Live MySQL database synchronization. Track orders and manage menu items.
             </p>
           </div>
 
           <div className="admin-header-actions">
-            <button onClick={loadAllAdminData} className="btn btn-outline btn-sm">
+            <button 
+              type="button" 
+              onClick={loadAllAdminData} 
+              className="btn btn-outline btn-sm"
+              title="Refresh all data"
+            >
               <RefreshCw size={14} /> Refresh Data
             </button>
             {activeTab === 'foods' && (
-              <button onClick={handleOpenAddModal} className="btn btn-primary btn-sm">
+              <button 
+                type="button" 
+                onClick={handleOpenAddModal} 
+                className="btn btn-primary btn-sm"
+              >
                 <Plus size={16} /> Add Food Item
               </button>
             )}
@@ -245,17 +257,17 @@ const AdminDashboard = () => {
             <div className="stats-kpi-grid">
               <div className="card kpi-card">
                 <div className="kpi-icon-box kpi-blue">
-                  <Utensils size={24} />
+                  <Utensils size={22} />
                 </div>
                 <div className="kpi-info">
-                  <span className="kpi-label">Total Food Items</span>
+                  <span className="kpi-label">Total Menu Items</span>
                   <strong className="kpi-number">{stats?.totalFoods ?? foods.length}</strong>
                 </div>
               </div>
 
               <div className="card kpi-card">
                 <div className="kpi-icon-box kpi-slate">
-                  <ShoppingBag size={24} />
+                  <ShoppingBag size={22} />
                 </div>
                 <div className="kpi-info">
                   <span className="kpi-label">Total Orders Placed</span>
@@ -265,17 +277,17 @@ const AdminDashboard = () => {
 
               <div className="card kpi-card">
                 <div className="kpi-icon-box kpi-amber">
-                  <Clock size={24} />
+                  <Clock size={22} />
                 </div>
                 <div className="kpi-info">
-                  <span className="kpi-label">Pending / In-Prep Orders</span>
+                  <span className="kpi-label">In-Queue / Cooking</span>
                   <strong className="kpi-number">{stats?.pendingOrders ?? 0}</strong>
                 </div>
               </div>
 
               <div className="card kpi-card">
                 <div className="kpi-icon-box kpi-green">
-                  <CheckCircle2 size={24} />
+                  <CheckCircle2 size={22} />
                 </div>
                 <div className="kpi-info">
                   <span className="kpi-label">Completed Pickups</span>
@@ -289,12 +301,12 @@ const AdminDashboard = () => {
               <div className="card overview-card">
                 <div className="card-header-clean">
                   <h3 className="card-heading-title">Recent Incoming Orders</h3>
-                  <button onClick={() => setActiveTab('orders')} className="link-text-btn">
+                  <button type="button" onClick={() => setActiveTab('orders')} className="link-text-btn">
                     View All Orders <ChevronRight size={14} />
                   </button>
                 </div>
 
-                <div className="recent-orders-table-wrapper">
+                <div className="table-responsive">
                   <table className="admin-table">
                     <thead>
                       <tr>
@@ -303,40 +315,44 @@ const AdminDashboard = () => {
                         <th>Items</th>
                         <th>Total</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Update Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {orders.slice(0, 5).map((ord) => (
-                        <tr key={ord.id}>
-                          <td><strong>{ord.orderNumber}</strong></td>
-                          <td>{ord.userName}</td>
-                          <td>{ord.items?.length || 0} items</td>
-                          <td><strong>₹{Number(ord.totalAmount).toFixed(2)}</strong></td>
-                          <td>
-                            <span className={`badge ${
-                              ord.status === 'Completed' ? 'badge-success' : 
-                              ord.status === 'Ready' ? 'badge-primary' : 
-                              ord.status === 'Preparing' ? 'badge-accent' : 'badge-neutral'
-                            }`}>
-                              {ord.status}
-                            </span>
-                          </td>
-                          <td>
-                            <select
-                              value={ord.status}
-                              onChange={(e) => handleStatusChange(ord.id, e.target.value)}
-                              className="status-quick-select"
-                            >
-                              <option value="Pending">Pending</option>
-                              <option value="Accepted">Accepted</option>
-                              <option value="Preparing">Preparing</option>
-                              <option value="Ready">Ready</option>
-                              <option value="Completed">Completed</option>
-                            </select>
+                      {orders.length === 0 ? (
+                        <tr>
+                          <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                            No orders received yet today.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        orders.slice(0, 5).map((ord) => (
+                          <tr key={ord.id}>
+                            <td><strong className="order-mono-id">{ord.orderNumber}</strong></td>
+                            <td>{ord.userName}</td>
+                            <td>{ord.items?.length || 0} items</td>
+                            <td><strong>₹{Number(ord.totalAmount).toFixed(2)}</strong></td>
+                            <td>
+                              <span className={`badge ${getOrderStatusBadgeClass(ord.status)}`}>
+                                {ord.status}
+                              </span>
+                            </td>
+                            <td>
+                              <select
+                                value={ord.status}
+                                onChange={(e) => handleStatusChange(ord.id, e.target.value)}
+                                className="status-quick-select"
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Accepted">Accepted</option>
+                                <option value="Preparing">Preparing</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Completed">Completed</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -344,18 +360,18 @@ const AdminDashboard = () => {
 
               {/* Quick Actions Card */}
               <div className="card overview-card shortcuts-card">
-                <h3 className="card-heading-title">Food Management Shortcuts</h3>
-                <p className="shortcuts-desc">Fast administrative controls for lunch-break canteen rush.</p>
+                <h3 className="card-heading-title">Quick Operations</h3>
+                <p className="shortcuts-desc">Fast administrative actions during peak canteen lunch breaks.</p>
 
                 <div className="shortcuts-buttons-list">
-                  <button onClick={handleOpenAddModal} className="btn btn-primary shortcut-btn">
-                    <Plus size={16} /> Add New Dish / Drink
+                  <button type="button" onClick={handleOpenAddModal} className="btn btn-primary shortcut-btn">
+                    <Plus size={16} /> Add New Dish or Beverage
                   </button>
-                  <button onClick={() => setActiveTab('foods')} className="btn btn-outline shortcut-btn">
+                  <button type="button" onClick={() => setActiveTab('foods')} className="btn btn-outline shortcut-btn">
                     <Utensils size={16} /> Manage Dish Availability & Prices
                   </button>
-                  <button onClick={() => { setActiveTab('orders'); setSelectedStatus('Pending'); }} className="btn btn-outline shortcut-btn">
-                    <Clock size={16} /> Review Pending Queue
+                  <button type="button" onClick={() => { setActiveTab('orders'); setSelectedStatus('Pending'); }} className="btn btn-outline shortcut-btn">
+                    <Clock size={16} /> View Pending Orders Queue
                   </button>
                 </div>
               </div>
@@ -367,10 +383,11 @@ const AdminDashboard = () => {
         {activeTab === 'orders' && (
           <div className="tab-pane">
             <div className="orders-filter-bar card">
-              <span className="filter-title">Filter by Kitchen Status:</span>
+              <span className="filter-title">Filter by Status:</span>
               <div className="status-filter-pills">
                 {STATUSES.map((st) => (
                   <button
+                    type="button"
                     key={st}
                     onClick={() => setSelectedStatus(st)}
                     className={`status-filter-btn ${selectedStatus === st ? 'active' : ''}`}
@@ -390,14 +407,14 @@ const AdminDashboard = () => {
                       <th>Time</th>
                       <th>Student Details</th>
                       <th>Ordered Dishes</th>
-                      <th>Amount</th>
-                      <th>Status & Action</th>
+                      <th>Total</th>
+                      <th>Kitchen Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orders.length === 0 ? (
                       <tr>
-                        <td colSpan="6" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                        <td colSpan="6" style={{ textAlign: 'center', padding: '3.5rem 1rem' }}>
                           No orders found under "{selectedStatus}" status.
                         </td>
                       </tr>
@@ -427,19 +444,17 @@ const AdminDashboard = () => {
                             <strong className="order-amount-text">₹{Number(ord.totalAmount).toFixed(2)}</strong>
                           </td>
                           <td>
-                            <div className="status-controller-box">
-                              <select
-                                value={ord.status}
-                                onChange={(e) => handleStatusChange(ord.id, e.target.value)}
-                                className={`admin-status-dropdown ${ord.status.toLowerCase()}`}
-                              >
-                                <option value="Pending">1. Pending</option>
-                                <option value="Accepted">2. Accepted</option>
-                                <option value="Preparing">3. Preparing</option>
-                                <option value="Ready">4. Ready</option>
-                                <option value="Completed">5. Completed</option>
-                              </select>
-                            </div>
+                            <select
+                              value={ord.status}
+                              onChange={(e) => handleStatusChange(ord.id, e.target.value)}
+                              className={`admin-status-dropdown ${ord.status.toLowerCase()}`}
+                            >
+                              <option value="Pending">1. Pending</option>
+                              <option value="Accepted">2. Accepted</option>
+                              <option value="Preparing">3. Preparing</option>
+                              <option value="Ready">4. Ready for Pickup</option>
+                              <option value="Completed">5. Completed</option>
+                            </select>
                           </td>
                         </tr>
                       ))
@@ -459,8 +474,8 @@ const AdminDashboard = () => {
                 <table className="admin-table full-width">
                   <thead>
                     <tr>
-                      <th>Food Image</th>
-                      <th>Item Name & Description</th>
+                      <th>Image</th>
+                      <th>Dish Name & Description</th>
                       <th>Category</th>
                       <th>Price (₹)</th>
                       <th>Availability</th>
@@ -472,9 +487,10 @@ const AdminDashboard = () => {
                       <tr key={food.id}>
                         <td>
                           <img
-                            src={food.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150'}
+                            src={food.imageUrl || DEFAULT_FOOD_IMAGE}
                             alt={food.name}
                             className="admin-food-thumb"
+                            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_FOOD_IMAGE; }}
                           />
                         </td>
                         <td style={{ maxWidth: '280px' }}>
@@ -489,6 +505,7 @@ const AdminDashboard = () => {
                         </td>
                         <td>
                           <button
+                            type="button"
                             onClick={() => handleToggleAvailability(food)}
                             className={`badge ${food.available ? 'badge-success' : 'badge-danger'} clickable-badge`}
                             title="Click to toggle availability"
@@ -499,6 +516,7 @@ const AdminDashboard = () => {
                         <td>
                           <div className="admin-row-actions">
                             <button
+                              type="button"
                               onClick={() => handleOpenEditModal(food)}
                               className="btn btn-outline btn-sm action-icon-btn"
                               title="Edit Food Details"
@@ -506,6 +524,7 @@ const AdminDashboard = () => {
                               <Edit3 size={15} />
                             </button>
                             <button
+                              type="button"
                               onClick={() => handleDeleteFood(food)}
                               className="btn btn-outline btn-sm action-icon-btn delete-btn"
                               title="Delete Food Item"
@@ -531,14 +550,14 @@ const AdminDashboard = () => {
                 <h3 className="modal-title">
                   {editingFood ? `Edit "${editingFood.name}"` : 'Add New Food Item'}
                 </h3>
-                <button onClick={() => setIsModalOpen(false)} className="modal-close-btn">
-                  <X size={20} />
+                <button type="button" onClick={() => setIsModalOpen(false)} className="modal-close-btn" aria-label="Close dialog">
+                  <X size={18} />
                 </button>
               </div>
 
               <form onSubmit={handleSaveFood} className="modal-form">
                 <div className="form-group">
-                  <label className="form-label">Food Dish Name *</label>
+                  <label className="form-label">Dish Name *</label>
                   <input
                     type="text"
                     required
@@ -584,9 +603,9 @@ const AdminDashboard = () => {
                     rows="3"
                     value={foodForm.description}
                     onChange={(e) => setFoodForm({ ...foodForm, description: e.target.value })}
-                    placeholder="Ingredients, accompaniments, flavor details..."
+                    placeholder="Ingredients, spice level, accompaniments..."
                     className="form-control"
-                  ></textarea>
+                  />
                 </div>
 
                 <div className="form-group">
@@ -607,7 +626,7 @@ const AdminDashboard = () => {
                       checked={foodForm.available}
                       onChange={(e) => setFoodForm({ ...foodForm, available: e.target.checked })}
                     />
-                    <span>Item is currently available for students to order</span>
+                    <span>Dish is currently available to order</span>
                   </label>
                 </div>
 

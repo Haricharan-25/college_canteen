@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { loginUser, registerUser } from '../services/api';
-import { Coffee, ShieldCheck, UserCheck, AlertTriangle } from 'lucide-react';
+import { Coffee, ShieldCheck, UserCheck, AlertCircle, UtensilsCrossed } from 'lucide-react';
 import './Auth.css';
 
 const Auth = () => {
@@ -17,6 +18,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   const { login, switchToAdmin, switchToStudent } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -33,6 +35,7 @@ const Auth = () => {
           email: res.email,
           role: res.role,
         });
+        showToast(`Welcome to CampusBite, ${res.name}! Account created.`, 'success');
       } else {
         const res = await loginUser({
           email: formData.email,
@@ -44,13 +47,13 @@ const Auth = () => {
           email: res.email,
           role: res.role,
         });
+        showToast(`Signed in successfully as ${res.name}`, 'success');
       }
       navigate('/');
     } catch (err) {
-      setError(
-        err.response?.data?.message || 
-        'Authentication failed. Please check credentials or backend connection.'
-      );
+      const msg = err.response?.data?.message || 'Authentication failed. Please check your credentials.';
+      setError(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -58,11 +61,13 @@ const Auth = () => {
 
   const handleQuickStudent = () => {
     switchToStudent();
+    showToast('Signed in as Demo Student (Rahul Sharma)', 'info');
     navigate('/');
   };
 
   const handleQuickAdmin = () => {
     switchToAdmin();
+    showToast('Signed in as Canteen Admin Staff', 'info');
     navigate('/admin');
   };
 
@@ -71,15 +76,15 @@ const Auth = () => {
       <div className="card auth-card">
         <div className="auth-brand-center">
           <div className="auth-brand-icon">
-            <Coffee size={28} color="#FFFFFF" />
+            <UtensilsCrossed size={26} color="#FFFFFF" />
           </div>
-          <h2 className="auth-title">CampusBite Portal</h2>
-          <p className="auth-sub">Online College Canteen Food Ordering System</p>
+          <h2 className="auth-title">CampusBite</h2>
+          <p className="auth-sub">Online College Canteen Food Ordering Portal</p>
         </div>
 
         {error && (
           <div className="alert alert-danger">
-            <AlertTriangle size={18} />
+            <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
@@ -87,12 +92,12 @@ const Auth = () => {
         <form onSubmit={handleSubmit} className="auth-form">
           {isRegister && (
             <div className="form-group">
-              <label className="form-label">Full Name</label>
+              <label className="form-label">Full Name *</label>
               <input
                 type="text"
                 required
                 className="form-control"
-                placeholder="Rahul Sharma"
+                placeholder="e.g. Rahul Sharma"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -100,19 +105,19 @@ const Auth = () => {
           )}
 
           <div className="form-group">
-            <label className="form-label">College Email Address</label>
+            <label className="form-label">College Email Address *</label>
             <input
               type="email"
               required
               className="form-control"
-              placeholder="rahul@college.edu"
+              placeholder="e.g. rahul@college.edu"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label className="form-label">Password *</label>
             <input
               type="password"
               required
@@ -137,7 +142,11 @@ const Auth = () => {
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="btn btn-primary btn-lg auth-submit-btn">
+          <button 
+            type="submit" 
+            disabled={loading} 
+            className="btn btn-primary btn-lg auth-submit-btn"
+          >
             {loading ? 'Authenticating...' : isRegister ? 'Create College Account' : 'Sign In to CampusBite'}
           </button>
         </form>
@@ -176,14 +185,14 @@ const Auth = () => {
           )}
         </div>
 
-        {/* Quick Demo Bypass for Academic Viva Evaluation */}
+        {/* Quick Demo 1-Click Login Section */}
         <div className="quick-demo-section">
-          <span className="demo-hint-title">Quick Demo 1-Click Login:</span>
+          <span className="demo-hint-title">1-Click Demo Evaluation Profiles:</span>
           <div className="demo-actions-grid">
-            <button onClick={handleQuickStudent} className="btn btn-outline btn-sm">
+            <button type="button" onClick={handleQuickStudent} className="btn btn-outline btn-sm">
               <UserCheck size={14} /> Student Demo
             </button>
-            <button onClick={handleQuickAdmin} className="btn btn-secondary btn-sm">
+            <button type="button" onClick={handleQuickAdmin} className="btn btn-secondary btn-sm">
               <ShieldCheck size={14} /> Admin Staff Demo
             </button>
           </div>
