@@ -18,11 +18,17 @@ public class AuthService {
     }
 
     public AuthDTO.AuthResponse login(AuthDTO.LoginRequest req) {
-        User user = userRepository.findByEmail(req.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+        if (req == null || req.getEmail() == null || req.getEmail().trim().isEmpty() ||
+            req.getPassword() == null || req.getPassword().trim().isEmpty()) {
+            throw new RuntimeException("Email and password are required.");
+        }
+
+        String cleanEmail = req.getEmail().trim().toLowerCase();
+        User user = userRepository.findByEmail(cleanEmail)
+                .orElseThrow(() -> new RuntimeException("Invalid email or password."));
 
         if (!user.getPassword().equals(req.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+            throw new RuntimeException("Invalid email or password.");
         }
 
         return new AuthDTO.AuthResponse(
@@ -36,15 +42,26 @@ public class AuthService {
 
     @Transactional
     public AuthDTO.AuthResponse register(AuthDTO.RegisterRequest req) {
-        if (userRepository.existsByEmail(req.getEmail())) {
+        if (req == null || req.getEmail() == null || req.getEmail().trim().isEmpty()) {
+            throw new RuntimeException("Email address is required.");
+        }
+        if (req.getName() == null || req.getName().trim().isEmpty()) {
+            throw new RuntimeException("Full name is required.");
+        }
+        if (req.getPassword() == null || req.getPassword().trim().isEmpty()) {
+            throw new RuntimeException("Password is required.");
+        }
+
+        String cleanEmail = req.getEmail().trim().toLowerCase();
+        if (userRepository.existsByEmail(cleanEmail)) {
             throw new RuntimeException("Email is already registered. Please login.");
         }
 
         User user = new User();
-        user.setName(req.getName());
-        user.setEmail(req.getEmail());
+        user.setName(req.getName().trim());
+        user.setEmail(cleanEmail);
         user.setPassword(req.getPassword());
-        user.setRole(req.getRole() != null && !req.getRole().trim().isEmpty() ? req.getRole().toUpperCase() : "STUDENT");
+        user.setRole(req.getRole() != null && !req.getRole().trim().isEmpty() ? req.getRole().trim().toUpperCase() : "STUDENT");
 
         User saved = userRepository.save(user);
         return new AuthDTO.AuthResponse(

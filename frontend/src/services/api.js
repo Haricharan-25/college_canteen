@@ -1,13 +1,32 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+// Normalize the base URL to ensure it always correctly routes to the Spring Boot REST API
+// Handles:
+// - https://my-backend.onrender.com (appends /api)
+// - https://my-backend.onrender.com/ (appends /api)
+// - https://my-backend.onrender.com/api (kept as is)
+// - https://my-backend.onrender.com/api/ (removes trailing slash)
+// - undefined / empty (defaults to http://localhost:8080/api for local dev)
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!envUrl || !envUrl.trim()) {
+    return 'http://localhost:8080/api';
+  }
+  let cleanUrl = envUrl.trim().replace(/\/+$/, '');
+  if (!cleanUrl.endsWith('/api')) {
+    cleanUrl = `${cleanUrl}/api`;
+  }
+  return cleanUrl;
+};
+
+const API_BASE_URL = getBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 15000,
 });
 
 // Food APIs

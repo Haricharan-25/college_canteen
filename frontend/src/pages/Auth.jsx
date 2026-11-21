@@ -146,14 +146,30 @@ const Auth = () => {
           {isRegister ? (
             <p>
               Already have an account?{' '}
-              <button onClick={() => setIsRegister(false)} className="link-button">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRegister(false);
+                  setError('');
+                  setFormData({ name: '', email: 'rahul@college.edu', password: 'student123', role: 'STUDENT' });
+                }}
+                className="link-button"
+              >
                 Sign In
               </button>
             </p>
           ) : (
             <p>
               New to the canteen?{' '}
-              <button onClick={() => setIsRegister(true)} className="link-button">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRegister(true);
+                  setError('');
+                  setFormData({ name: '', email: '', password: '', role: 'STUDENT' });
+                }}
+                className="link-button"
+              >
                 Register New Account
               </button>
             </p>

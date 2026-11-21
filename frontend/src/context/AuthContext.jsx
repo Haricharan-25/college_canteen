@@ -3,8 +3,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Default to pre-seeded Student "Rahul Sharma" for seamless zero-friction college demo,
-  // while allowing instant switching to Admin or custom accounts.
+  // If user has saved session in localStorage, load it.
+  // If user explicitly logged out, keep logged out.
+  // Otherwise, default to pre-seeded Student "Rahul Sharma" for zero-friction demo.
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('campusbite_user');
     if (saved) {
@@ -13,6 +14,10 @@ export const AuthProvider = ({ children }) => {
       } catch (e) {
         // fallback
       }
+    }
+    const loggedOut = localStorage.getItem('campusbite_logged_out');
+    if (loggedOut === 'true') {
+      return null;
     }
     return {
       id: 2,
@@ -32,14 +37,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
+    localStorage.setItem('campusbite_user', JSON.stringify(userData));
+    localStorage.removeItem('campusbite_logged_out');
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('campusbite_user');
+    localStorage.setItem('campusbite_logged_out', 'true');
   };
 
   const switchToAdmin = () => {
-    setUser({
+    login({
       id: 1,
       name: 'Admin Canteen Staff',
       email: 'admin@canteen.com',
@@ -48,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const switchToStudent = () => {
-    setUser({
+    login({
       id: 2,
       name: 'Rahul Sharma',
       email: 'rahul@college.edu',
