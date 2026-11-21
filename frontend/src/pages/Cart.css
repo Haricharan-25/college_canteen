@@ -126,7 +126,7 @@
 }
 
 .qty-btn:hover {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card-alt);
 }
 
 .qty-number {

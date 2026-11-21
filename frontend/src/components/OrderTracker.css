@@ -1,5 +1,5 @@
 .tracker-wrapper {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 1.75rem 1.25rem;
@@ -45,7 +45,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border: 2px solid var(--border-color);
   color: var(--text-light);
   display: flex;

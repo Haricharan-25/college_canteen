@@ -2,44 +2,51 @@
    CampusBite Production Design System
    Strict Design Rules:
    - Absolutely NO GRADIENTS anywhere. Pure solid colors only.
-   - Primary blue: #2563EB (Hover: #1D4ED8, Light: #EFF6FF)
-   - Dark navy: #0F172A (Hover: #1E293B, Light: #F1F5F9)
-   - Background: #F8FAFC
-   - Cards / Surface: #FFFFFF
-   - Green (Success / Available): #16A34A (Light: #DCFCE7, Border: #BBF7D0)
-   - Amber (Pending / Warning): #D97706 (Light: #FEF3C7, Border: #FDE68A)
-   - Red (Sold out / Danger): #DC2626 (Light: #FEE2E2, Border: #FECACA)
-   - Text Primary: #0F172A, Text Secondary: #475569, Text Muted: #64748B
-   - Borders: #E2E8F0 (Strong: #CBD5E1)
+   - Professional Palette:
+     * Primary: Royal Blue (#2563EB), Dark Blue (#1D4ED8)
+     * Secondary: Amber (#F59E0B), Coral (#E85D3F), Violet (#8B5CF6)
+     * Status: Success Green (#16A34A), Warning Amber (#D97706), Error Red (#DC2626), Info Blue (#0EA5E9)
+   - Light Theme:
+     * Main background: #F8FAFC, Card background: #FFFFFF
+     * Primary text: #0F172A, Secondary text: #64748B, Borders: #E2E8F0, Primary buttons: #2563EB
+   - Dark Theme:
+     * Main background: #0B1220, Card background: #172235, Secondary surface: #1E293B
+     * Primary text: #F8FAFC, Secondary text: #A7B3C5, Borders: #334155, Primary buttons: #3B82F6
    ========================================================================== */
 
 :root {
+  /* Brand Primary */
   --primary: #2563EB;
   --primary-hover: #1D4ED8;
   --primary-light: #EFF6FF;
   --primary-border: #BFDBFE;
 
-  --secondary: #0F172A;
-  --secondary-hover: #1E293B;
-  --secondary-light: #F1F5F9;
+  /* Secondary Accents */
+  --amber: #F59E0B;
+  --amber-hover: #D97706;
+  --amber-light: #FEF3C7;
+  --amber-border: #FDE68A;
 
-  --bg-page: #F8FAFC;
-  --bg-card: #FFFFFF;
-  --bg-card-alt: #F1F5F9;
-  --bg-hover: #F8FAFC;
+  --coral: #E85D3F;
+  --coral-hover: #C2410C;
+  --coral-light: #FFEDD5;
+  --coral-border: #FED7AA;
 
-  --text-main: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
-  --text-light: #94A3B8;
+  --violet: #8B5CF6;
+  --violet-hover: #7C3AED;
+  --violet-light: #EDE9FE;
+  --violet-border: #DDD6FE;
 
-  --border-color: #E2E8F0;
-  --border-strong: #CBD5E1;
-
+  /* Status */
   --success: #16A34A;
   --success-hover: #15803D;
   --success-light: #DCFCE7;
   --success-border: #BBF7D0;
+
+  --warning: #D97706;
+  --warning-hover: #B45309;
+  --warning-light: #FEF3C7;
+  --warning-border: #FDE68A;
 
   --accent: #D97706;
   --accent-light: #FEF3C7;
@@ -50,9 +57,33 @@
   --danger-light: #FEE2E2;
   --danger-border: #FECACA;
 
-  --info: #0284C7;
+  --info: #0EA5E9;
+  --info-hover: #0284C7;
   --info-light: #E0F2FE;
   --info-border: #BAE6FD;
+
+  /* Surfaces & Backgrounds (Light Theme) */
+  --bg-page: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-card-alt: #F1F5F9;
+  --bg-surface: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-hover: #F8FAFC;
+
+  /* Typography Colors (Light Theme) */
+  --text-main: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
+
+  /* Borders (Light Theme) */
+  --border-color: #E2E8F0;
+  --border-strong: #CBD5E1;
+
+  /* Semantic heading color */
+  --secondary: #0F172A;
+  --secondary-hover: #1E293B;
+  --secondary-light: #F1F5F9;
 
   --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
   --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
@@ -67,6 +98,87 @@
   --radius-full: 9999px;
 
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ==========================================================================
+   Dark Theme Definition
+   ========================================================================== */
+[data-theme="dark"],
+.dark {
+  /* Brand Primary */
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --primary-light: #1E293B;
+  --primary-border: #3B82F6;
+
+  /* Secondary Accents */
+  --amber: #F59E0B;
+  --amber-hover: #D97706;
+  --amber-light: rgba(245, 158, 11, 0.16);
+  --amber-border: #F59E0B;
+
+  --coral: #E85D3F;
+  --coral-hover: #C2410C;
+  --coral-light: rgba(232, 93, 63, 0.16);
+  --coral-border: #E85D3F;
+
+  --violet: #8B5CF6;
+  --violet-hover: #7C3AED;
+  --violet-light: rgba(139, 92, 246, 0.16);
+  --violet-border: #8B5CF6;
+
+  /* Status */
+  --success: #16A34A;
+  --success-hover: #22C55E;
+  --success-light: rgba(22, 163, 74, 0.16);
+  --success-border: #16A34A;
+
+  --warning: #D97706;
+  --warning-hover: #F59E0B;
+  --warning-light: rgba(217, 119, 6, 0.16);
+  --warning-border: #D97706;
+
+  --accent: #F59E0B;
+  --accent-light: rgba(245, 158, 11, 0.16);
+  --accent-border: #F59E0B;
+
+  --danger: #DC2626;
+  --danger-hover: #EF4444;
+  --danger-light: rgba(220, 38, 38, 0.16);
+  --danger-border: #DC2626;
+
+  --info: #0EA5E9;
+  --info-hover: #38BDF8;
+  --info-light: rgba(14, 165, 233, 0.16);
+  --info-border: #0EA5E9;
+
+  /* Surfaces & Backgrounds (Dark Theme) */
+  --bg-page: #0B1220;
+  --bg-card: #172235;
+  --bg-card-alt: #1E293B;
+  --bg-surface: #172235;
+  --bg-input: #1E293B;
+  --bg-hover: #1E293B;
+
+  /* Typography Colors (Dark Theme) */
+  --text-main: #F8FAFC;
+  --text-secondary: #A7B3C5;
+  --text-muted: #A7B3C5;
+  --text-light: #64748B;
+
+  /* Borders (Dark Theme) */
+  --border-color: #334155;
+  --border-strong: #475569;
+
+  /* Semantic heading color */
+  --secondary: #F8FAFC;
+  --secondary-hover: #E2E8F0;
+  --secondary-light: #1E293B;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.45), 0 1px 2px -1px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.45);
 }
 
 * {
@@ -171,7 +283,7 @@ input, select, textarea {
 }
 
 .btn-outline {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   color: var(--text-main);
   border-color: var(--border-color);
 }
@@ -179,6 +291,7 @@ input, select, textarea {
 .btn-outline:hover {
   background-color: var(--bg-card-alt);
   border-color: var(--border-strong);
+  color: var(--primary);
 }
 
 .btn-danger {
@@ -291,10 +404,10 @@ input, select, textarea {
   padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
   color: var(--text-main);
-  background-color: #FFFFFF;
+  background-color: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .form-control:focus {
@@ -318,19 +431,19 @@ input, select, textarea {
 
 .alert-success {
   background-color: var(--success-light);
-  color: #14532D;
+  color: var(--success);
   border: 1px solid var(--success-border);
 }
 
 .alert-danger {
   background-color: var(--danger-light);
-  color: #7F1D1D;
+  color: var(--danger);
   border: 1px solid var(--danger-border);
 }
 
 .alert-info {
   background-color: var(--info-light);
-  color: #0C4A6E;
+  color: var(--info);
   border: 1px solid var(--info-border);
 }
 
@@ -356,7 +469,7 @@ input, select, textarea {
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -378,7 +491,7 @@ input, select, textarea {
 
 .toast-item.toast-success {
   border-left: 4px solid var(--success);
-  color: #14532D;
+  color: var(--text-main);
 }
 .toast-item.toast-success .toast-icon {
   color: var(--success);
@@ -386,7 +499,7 @@ input, select, textarea {
 
 .toast-item.toast-error {
   border-left: 4px solid var(--danger);
-  color: #7F1D1D;
+  color: var(--text-main);
 }
 .toast-item.toast-error .toast-icon {
   color: var(--danger);
@@ -394,7 +507,7 @@ input, select, textarea {
 
 .toast-item.toast-info {
   border-left: 4px solid var(--primary);
-  color: #1E3A8A;
+  color: var(--text-main);
 }
 .toast-item.toast-info .toast-icon {
   color: var(--primary);
@@ -431,7 +544,7 @@ input, select, textarea {
    Loading Skeletons (SOLID COLORS - NO GRADIENTS)
    ========================================================================== */
 .skeleton-box {
-  background-color: #E2E8F0;
+  background-color: var(--border-color);
   border-radius: var(--radius-sm);
   animation: skeletonPulse 1.4s ease-in-out infinite;
 }

@@ -7,7 +7,7 @@
    Hero Welcome Section
    ========================================================================= */
 .hero-section {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
   padding: 2.75rem 0 2.25rem;
 }

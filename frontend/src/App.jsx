@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
@@ -24,41 +25,43 @@ const AdminRoute = ({ children }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <ToastProvider>
-          <Router>
-            <div className="app-container">
-              <Navbar />
-              <main className="main-content">
-                <Routes>
-                  {/* Student Pages */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="/menu" element={<Menu />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/track/:orderIdentifier" element={<OrderTracking />} />
-                  <Route path="/orders" element={<OrderHistory />} />
-                  <Route path="/login" element={<Auth />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <ToastProvider>
+            <Router>
+              <div className="app-container">
+                <Navbar />
+                <main className="main-content">
+                  <Routes>
+                    {/* Student Pages */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/track/:orderIdentifier" element={<OrderTracking />} />
+                    <Route path="/orders" element={<OrderHistory />} />
+                    <Route path="/login" element={<Auth />} />
 
-                  {/* Admin Module */}
-                  <Route
-                    path="/admin"
-                    element={
-                      <AdminRoute>
-                        <AdminDashboard />
-                      </AdminRoute>
-                    }
-                  />
+                    {/* Admin Module */}
+                    <Route
+                      path="/admin"
+                      element={
+                        <AdminRoute>
+                          <AdminDashboard />
+                        </AdminRoute>
+                      }
+                    />
 
-                  {/* Fallback */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </main>
-            </div>
-          </Router>
-        </ToastProvider>
-      </CartProvider>
-    </AuthProvider>
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </main>
+              </div>
+            </Router>
+          </ToastProvider>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

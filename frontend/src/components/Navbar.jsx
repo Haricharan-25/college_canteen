@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import { useTheme } from '../context/ThemeContext';
 import { 
   ShoppingBag, 
   UtensilsCrossed, 
@@ -16,7 +17,9 @@ import {
   Coffee,
   ChevronDown,
   Layers,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from 'lucide-react';
 import './Navbar.css';
 
@@ -24,6 +27,7 @@ const Navbar = () => {
   const { user, logout, switchToAdmin, switchToStudent } = useAuth();
   const { totalItemsCount } = useCart();
   const { showToast } = useToast();
+  const { theme, toggleTheme, isDark } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -132,6 +136,22 @@ const Navbar = () => {
 
           {/* Right Actions */}
           <div className="navbar-actions">
+            {/* Theme Toggle (Light / Dark Mode) */}
+            <button
+              type="button"
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDark ? (
+                <Sun size={18} className="theme-toggle-icon sun-icon" />
+              ) : (
+                <Moon size={18} className="theme-toggle-icon moon-icon" />
+              )}
+              <span className="theme-toggle-text">{isDark ? 'Light' : 'Dark'}</span>
+            </button>
+
             {/* Cart Button */}
             <Link to="/cart" className="cart-button" title="View Shopping Cart">
               <ShoppingBag size={20} />
@@ -229,6 +249,16 @@ const Navbar = () => {
                   <ShieldCheck size={18} /> Admin Dashboard
                 </NavLink>
               )}
+
+              {/* Mobile Theme Toggle */}
+              <button
+                type="button"
+                className="mobile-nav-link mobile-theme-btn"
+                onClick={toggleTheme}
+              >
+                {isDark ? <Sun size={18} className="theme-toggle-icon sun-icon" /> : <Moon size={18} className="theme-toggle-icon moon-icon" />}
+                <span>Theme: <strong>{isDark ? 'Dark Mode (Active)' : 'Light Mode (Active)'}</strong></span>
+              </button>
 
               <div className="mobile-divider" />
 

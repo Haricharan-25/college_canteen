@@ -7,13 +7,19 @@
 /* Sidebar */
 .admin-sidebar {
   width: 250px;
-  background-color: var(--secondary);
+  background-color: #0F172A;
   color: #F8FAFC;
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
   border-right: 1px solid #1E293B;
   flex-shrink: 0;
+}
+
+[data-theme="dark"] .admin-sidebar,
+.dark .admin-sidebar {
+  background-color: #070B13;
+  border-right: 1px solid var(--border-color);
 }
 
 .admin-sidebar-header {
@@ -291,7 +297,7 @@
   font-weight: 600;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   color: var(--text-secondary);
 }
 
@@ -333,8 +339,8 @@
   border: 1px solid var(--border-color);
   font-weight: 600;
   font-size: 0.8125rem;
-  background-color: #FFFFFF;
-  color: var(--secondary);
+  background-color: var(--bg-input);
+  color: var(--text-main);
 }
 
 .status-quick-select {
@@ -342,7 +348,8 @@
   font-size: 0.78rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
-  background-color: #FFFFFF;
+  background-color: var(--bg-input);
+  color: var(--text-main);
 }
 
 /* Food Table */
@@ -419,7 +426,7 @@
   max-width: 520px;
   width: 100%;
   padding: 1.75rem;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
 }
 
 .modal-header {

@@ -59,7 +59,7 @@
 }
 
 .food-badge-category {
-  background-color: var(--secondary);
+  background-color: #0F172A;
   color: #FFFFFF;
   font-size: 0.68rem;
   font-weight: 700;
@@ -69,11 +69,18 @@
   text-transform: uppercase;
 }
 
+[data-theme="dark"] .food-badge-category,
+.dark .food-badge-category {
+  background-color: var(--bg-card-alt);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
 .in-cart-indicator {
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background-color: var(--secondary);
+  background-color: var(--primary);
   color: #FFFFFF;
   font-size: 0.68rem;
   font-weight: 700;
