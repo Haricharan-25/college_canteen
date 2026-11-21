@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
-import { ShoppingBag, Check } from 'lucide-react';
+import { ShoppingBag, Check, Flame } from 'lucide-react';
+import { getFoodBadges } from '../utils/foodBadges';
 import './FoodCard.css';
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';
@@ -15,6 +16,9 @@ const FoodCard = ({ food, compact = false }) => {
   // Check if this food item is currently in the cart
   const itemInCart = cartItems.find((item) => item.id === food.id);
   const cartQuantity = itemInCart ? itemInCart.quantity : 0;
+
+  // Compute deterministic food badges based on actual data
+  const { highlightBadge, dietaryBadge, spiceBadge, availabilityBadge } = getFoodBadges(food);
 
   const handleAddToCart = () => {
     if (!food.available) {
@@ -43,10 +47,32 @@ const FoodCard = ({ food, compact = false }) => {
         
         {/* Badges Overlay */}
         <div className="food-card-badges">
-          <span className="food-badge-category">{food.category}</span>
-          <span className={`badge ${food.available ? 'badge-success' : 'badge-danger'}`}>
-            {food.available ? 'Available' : 'Sold Out'}
-          </span>
+          <div className="badges-group-left">
+            {highlightBadge && (
+              <span className={`food-tag-badge badge-${highlightBadge.type}`}>
+                {highlightBadge.label}
+              </span>
+            )}
+            <span className="food-badge-category">{food.category}</span>
+          </div>
+
+          <div className="badges-group-right">
+            <span className={`food-tag-badge badge-${dietaryBadge.type}`} title={dietaryBadge.label}>
+              <span className={`dietary-dot dietary-${dietaryBadge.type}`} />
+              <span>{dietaryBadge.label}</span>
+            </span>
+
+            {spiceBadge && !compact && (
+              <span className="food-tag-badge badge-spicy" title="Spicy Dish">
+                <Flame size={10} />
+                <span>Spicy</span>
+              </span>
+            )}
+
+            <span className={`food-tag-badge badge-${availabilityBadge.type}`}>
+              {availabilityBadge.label}
+            </span>
+          </div>
         </div>
 
         {/* In-Cart Tag if already present */}

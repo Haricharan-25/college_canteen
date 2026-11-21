@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
+import NotificationBell from './NotificationBell';
 import { 
   ShoppingBag, 
   UtensilsCrossed, 
@@ -151,6 +152,9 @@ const Navbar = () => {
               )}
               <span className="theme-toggle-text">{isDark ? 'Light' : 'Dark'}</span>
             </button>
+
+            {/* Notification Bell */}
+            <NotificationBell />
 
             {/* Cart Button */}
             <Link to="/cart" className="cart-button" title="View Shopping Cart">

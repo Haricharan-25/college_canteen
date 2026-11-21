@@ -49,24 +49,113 @@
 
 .food-card-badges {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
+  top: 6px;
+  left: 6px;
+  right: 6px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   z-index: 2;
+  gap: 0.25rem;
+  pointer-events: none;
+}
+
+.badges-group-left,
+.badges-group-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.badges-group-right {
+  justify-content: flex-end;
+}
+
+.food-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.16rem 0.42rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Badge Design Rules */
+/* Bestseller: Amber #F59E0B */
+.badge-bestseller {
+  background-color: #F59E0B;
+  color: #FFFFFF;
+}
+
+/* Popular: Coral #E85D3F */
+.badge-popular {
+  background-color: #E85D3F;
+  color: #FFFFFF;
+}
+
+/* New: Violet #8B5CF6 */
+.badge-new {
+  background-color: #8B5CF6;
+  color: #FFFFFF;
+}
+
+/* Veg: Green #16A34A */
+.badge-veg {
+  background-color: #16A34A;
+  color: #FFFFFF;
+}
+
+/* Non-Veg: Red #DC2626 */
+.badge-nonveg {
+  background-color: #DC2626;
+  color: #FFFFFF;
+}
+
+/* Spicy: Orange #EA580C */
+.badge-spicy {
+  background-color: #EA580C;
+  color: #FFFFFF;
+}
+
+/* Available: Green #16A34A */
+.badge-available {
+  background-color: #16A34A;
+  color: #FFFFFF;
+}
+
+/* Sold Out: Grey #64748B */
+.badge-soldout {
+  background-color: #64748B;
+  color: #FFFFFF;
+}
+
+.dietary-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  display: inline-block;
 }
 
 .food-badge-category {
   background-color: #0F172A;
   color: #FFFFFF;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  padding: 0.18rem 0.5rem;
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.03em;
+  padding: 0.16rem 0.45rem;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .food-badge-category,

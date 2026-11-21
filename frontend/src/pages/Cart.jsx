@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useNotifications } from '../context/NotificationContext';
 import { createOrder } from '../services/api';
 import {
   ShoppingBag,
@@ -24,6 +25,7 @@ const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotalAmount } = useCart();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { refreshNotifications } = useNotifications();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -79,6 +81,9 @@ const Cart = () => {
       clearCart();
       setOrderConfirmed(placedOrder);
       showToast(`Order #${placedOrder.orderNumber} placed successfully!`, 'success');
+      if (refreshNotifications) {
+        refreshNotifications();
+      }
     } catch (err) {
       console.error(err);
       setErrorMsg(
