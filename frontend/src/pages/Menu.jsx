@@ -179,10 +179,10 @@ const Menu = () => {
           </button>
         </div>
 
-        {/* Food Items Grid with Skeleton Loading */}
+        {/* 3-Column Card Layout: [card][card][card] */}
         {loading ? (
           <div className="food-grid">
-            {Array.from({ length: 8 }).map((_, idx) => (
+            {Array.from({ length: 6 }).map((_, idx) => (
               <FoodCardSkeleton key={idx} />
             ))}
           </div>
@@ -206,7 +206,9 @@ const Menu = () => {
         ) : (
           <div className="food-grid">
             {filteredFoods.map((food) => (
-              <FoodCard key={food.id} food={food} />
+              <div key={food.id} className="menu-card-cell">
+                <FoodCard food={food} compact={false} />
+              </div>
             ))}
           </div>
         )}

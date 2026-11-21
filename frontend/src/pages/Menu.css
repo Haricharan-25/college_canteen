@@ -166,3 +166,34 @@
 .refresh-btn {
   padding: 0.3rem 0.65rem;
 }
+
+/* =========================================================================
+   3-Column Card Layout: [card] [card] [card]
+   ========================================================================= */
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.menu-card-cell {
+  display: flex;
+}
+
+.menu-card-cell > .food-card {
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .food-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .food-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
